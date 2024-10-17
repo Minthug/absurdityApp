@@ -16,7 +16,7 @@ class LogAspect {
 
     private val logger = LoggerFactory.getLogger(LogAspect::class.java)
 
-//    @Pointcut("execution(* com)")
+    @Pointcut("execution(* absurdity.ForOlder.order.adapter.in.web..*.*(..))")
     fun orderServiceBeforeExecute() { }
 
 
