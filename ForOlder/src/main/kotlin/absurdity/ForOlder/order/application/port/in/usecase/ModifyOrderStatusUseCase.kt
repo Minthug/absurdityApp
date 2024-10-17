@@ -1,4 +1,9 @@
 package absurdity.ForOlder.order.application.port.`in`.usecase
 
-class ModifyOrderStatusUseCase {
+import absurdity.ForOlder.common.annotation.UseCase
+
+@UseCase
+fun interface  ModifyOrderStatusUseCase {
+
+    fun modifyOrderStatus(orderId: Long): Long
 }

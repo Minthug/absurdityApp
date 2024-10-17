@@ -1,4 +1,10 @@
 package absurdity.ForOlder.order.application.port.`in`.usecase
 
-class LoadOrderUseCase {
+import absurdity.ForOlder.common.annotation.UseCase
+import absurdity.ForOlder.order.domain.Order
+
+@UseCase
+interface LoadOrderUseCase {
+
+    fun loadOrderById(orderId: Long): Order
 }
