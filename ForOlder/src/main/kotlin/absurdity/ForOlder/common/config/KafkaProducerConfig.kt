@@ -1,7 +1,7 @@
-package absurdity.ForOlder.config
+package absurdity.ForOlder.common.config
 
-import absurdity.ForOlder.kafka.dto.ModifyOrderStatusKafkaDto
-import absurdity.ForOlder.kafka.dto.SaveOrderKafkaDto
+import absurdity.ForOlder.order.domain.adapter.out.kafka.produce.dto.ModifyOrderStatusKafkaDto
+import absurdity.ForOlder.order.domain.adapter.out.kafka.produce.dto.SaveOrderKafkaDto
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean

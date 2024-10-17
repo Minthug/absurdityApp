@@ -1,6 +1,6 @@
-package absurdity.ForOlder.kafka.dto
+package absurdity.ForOlder.order.domain.adapter.out.kafka.produce.dto
 
-import absurdity.ForOlder.domain.OrderStatus
+import absurdity.ForOlder.order.domain.OrderStatus
 import org.hibernate.criterion.Order
 import java.time.LocalDateTime
 

@@ -1,5 +1,6 @@
 package absurdity.ForOlder.common.util
 
+import absurdity.ForOlder.common.annotation.Util
 import org.springframework.context.ApplicationEventPublisher
 
 @Util

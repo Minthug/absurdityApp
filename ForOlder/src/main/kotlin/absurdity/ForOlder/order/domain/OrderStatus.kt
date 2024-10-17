@@ -1,4 +1,4 @@
-package absurdity.ForOlder.domain
+package absurdity.ForOlder.order.domain
 
 enum class OrderStatus (
     val description: String

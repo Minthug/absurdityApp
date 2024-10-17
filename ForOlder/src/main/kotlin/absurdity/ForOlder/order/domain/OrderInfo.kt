@@ -1,4 +1,4 @@
-package absurdity.ForOlder.domain
+package absurdity.ForOlder.order.domain
 
 data class OrderInfo (
     val orderId: Long,

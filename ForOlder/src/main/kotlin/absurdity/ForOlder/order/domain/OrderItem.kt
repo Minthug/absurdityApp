@@ -1,4 +1,4 @@
-package absurdity.ForOlder.domain
+package absurdity.ForOlder.order.domain
 
 class OrderItem (
     val itemName: String,
