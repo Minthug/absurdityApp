@@ -2,7 +2,6 @@ package absurdity.ForOlder.order.domain
 
 import absurdity.ForOlder.common.exception.CustomException
 import absurdity.ForOlder.common.exception.ErrorCode.CANNOT_CANCEL_ORDER
-import absurdity.ForOlder.order.adapter.out.kafka.produce.dto.OrderItem
 
 data class Order (
     val orderInfo: OrderInfo,

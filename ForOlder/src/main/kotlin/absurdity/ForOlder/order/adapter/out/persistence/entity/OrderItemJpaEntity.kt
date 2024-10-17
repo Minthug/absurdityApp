@@ -1,6 +1,5 @@
 package absurdity.ForOlder.order.adapter.out.persistence.entity
 
-import absurdity.ForOlder.order.domain.OrderStatus
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
