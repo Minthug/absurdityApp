@@ -1,6 +1,6 @@
 package absurdity.ForOlder.domain
 
-import absurdity.ForOlder.common.CustomException
+import absurdity.ForOlder.common.exception.CustomException
 import absurdity.ForOlder.common.exception.ErrorCode.CANNOT_CANCEL_ORDER
 import absurdity.ForOlder.kafka.dto.OrderItem
 
