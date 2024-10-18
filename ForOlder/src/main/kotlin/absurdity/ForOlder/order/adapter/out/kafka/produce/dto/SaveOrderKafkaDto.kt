@@ -4,7 +4,7 @@ import absurdity.ForOlder.order.domain.OrderStatus
 import java.time.LocalDateTime
 
 data class SaveOrderKafkaDto(
-    val order: Order,
+    val order: absurdity.ForOlder.order.adapter.out.kafka.produce.dto.Order,
     val orderItem: List<OrderItem>,
     val orderEvent: OrderEvent
 )

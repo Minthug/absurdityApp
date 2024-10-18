@@ -17,7 +17,7 @@ class SaveOrderEventListener (
 ) {
 
     @Async
-    @EventListener(SaveOrderKafkaDto::class)
+    @EventListener(SaveOrderEventDto::class)
     fun handleSaveEvent(orderEventDto: SaveOrderEventDto) {
         saveOrderKafkaTemplate.send("save-order-data", createSaveOrderKafkaDto(orderEventDto))
     }

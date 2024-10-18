@@ -4,6 +4,7 @@ import absurdity.ForOlder.order.adapter.out.kafka.produce.dto.ModifyOrderStatusK
 import absurdity.ForOlder.order.adapter.out.kafka.produce.dto.SaveOrderKafkaDto
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -15,9 +16,14 @@ import org.springframework.kafka.support.serializer.JsonSerializer
 
 @EnableKafka
 @Configuration
-class KafkaProducerConfig (
-    private val environment: Environment
-) {
+class KafkaProducerConfig ( private val environment: Environment ) {
+
+    private val logger = LoggerFactory.getLogger(KafkaProducerConfig::class.java)
+
+    private val bootstrapServers: String
+        get() = environment.getProperty("spring.kafka.producer.bootstrap-servers")
+            ?: throw IllegalStateException("Kafka bootstrap servers are not configured")
+
     @Bean(name = ["modifyOrderStatusDataProducerFactory"])
     fun modifyOrderStatusDataProducerFactory() : DefaultKafkaProducerFactory<String, ModifyOrderStatusKafkaDto> {
         return DefaultKafkaProducerFactory(modifyOrderStatusDataProducerConfig())
@@ -25,7 +31,7 @@ class KafkaProducerConfig (
 
     @Bean(name = ["modifyOrderStatusDataProducerConfig"])
     fun modifyOrderStatusDataProducerConfig() = mapOf(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to environment["spring.kafka.producer.bootstrap-servers"],
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to environment["spring.kafka.bootstrap-servers"],
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to org.springframework.kafka.support.serializer.JsonSerializer::class.java
     )
@@ -37,7 +43,9 @@ class KafkaProducerConfig (
 
     @Bean(name = ["saveOrderServiceDataProducerFactory"])
     fun saveOrderServiceDataProducerFactory(): DefaultKafkaProducerFactory<String, SaveOrderKafkaDto> {
-        return DefaultKafkaProducerFactory(saveOrderServiceProducerConfig())
+        val config = saveOrderServiceProducerConfig()
+        logger.info("Kafka producer config: $config")
+        return DefaultKafkaProducerFactory(config)
     }
 
     @Bean(name = ["saveOrderServiceDataProducerConfig"])
