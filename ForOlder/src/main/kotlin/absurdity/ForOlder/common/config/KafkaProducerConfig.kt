@@ -31,7 +31,7 @@ class KafkaProducerConfig ( private val environment: Environment ) {
 
     @Bean(name = ["modifyOrderStatusDataProducerConfig"])
     fun modifyOrderStatusDataProducerConfig() = mapOf(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to environment["spring.kafka.bootstrap-servers"],
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to environment["spring.kafka.producer.bootstrap-servers"],
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to org.springframework.kafka.support.serializer.JsonSerializer::class.java
     )
