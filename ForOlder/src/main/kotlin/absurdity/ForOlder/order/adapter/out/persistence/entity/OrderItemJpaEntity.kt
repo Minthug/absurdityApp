@@ -27,7 +27,7 @@ data class OrderItemJpaEntity (
     @Column(name = "ERRAND_QUANTITY")
     val itemQuantity: Int,
 
-    @Column(name = "ERRAND_PRICE")
+    @Column(name = "ERRAND_TOTAL_PRICE")
     val itemTotalPrice: Int,
 
     @Column(name = "DEL_STATUS")

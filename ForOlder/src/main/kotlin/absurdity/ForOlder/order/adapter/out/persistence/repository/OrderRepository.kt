@@ -11,6 +11,6 @@ import org.springframework.data.repository.query.Param
 interface OrderRepository: JpaRepository<OrderJpaEntity, Long> {
 
     @Modifying(clearAutomatically = true)
-    @Query("update ORDERS o set o.orderStatus = :orderStatus where o.orderId = :orderId")
+    @Query("update ORDER o set o.orderStatus = :orderStatus where o.orderId = :orderId")
     fun modifyOrderStatus(@Param("orderStatus") orderStatus: OrderStatus, @Param("orderId") orderId: Long)
 }
