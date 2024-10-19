@@ -1,4 +1,4 @@
-package forOlderJava.absurdityAppForJava.domain.entity;
+package forOlderJava.absurdityAppForJava.domain.order.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

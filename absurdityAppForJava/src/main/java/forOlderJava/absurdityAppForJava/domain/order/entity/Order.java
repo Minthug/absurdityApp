@@ -1,4 +1,4 @@
-package forOlderJava.absurdityAppForJava.domain.entity;
+package forOlderJava.absurdityAppForJava.domain.order.entity;
 
 import forOlderJava.absurdityAppForJava.global.exception.CustomException;
 import forOlderJava.absurdityAppForJava.global.exception.ErrorCode;
