@@ -42,7 +42,8 @@ spring:
   jwt:
     issuer:
     client-secret:
-    client-seconds:
+    access-expiry-seconds:
+    refresh-expiry-seconds:
 
   payment:
     toss:
