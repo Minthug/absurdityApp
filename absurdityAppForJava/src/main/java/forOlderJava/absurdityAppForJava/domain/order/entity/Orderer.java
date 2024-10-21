@@ -17,5 +17,4 @@ public class Orderer {
     private String phoneNumber;
     private String location;
 
-
 }

@@ -4,6 +4,7 @@ import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
 import forOlderJava.absurdityAppForJava.global.exception.CustomException;
 import forOlderJava.absurdityAppForJava.global.exception.ErrorCode;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,8 @@ public class Order extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORDER_ID")
     private Long id;
+
+    private String name;
 
     @Embedded
     private OrderInfo orderInfo;
@@ -60,5 +63,28 @@ public class Order extends BaseTimeEntity {
     private void setOrderItems(List<OrderItem> orderItems){
         this.orderItems = orderItems;
         orderItems.forEach(item -> item.setOrder(this));
+    }
+
+    private void calculateTotalPrice() {
+        int totalPrice = orderItems.stream()
+                .mapToInt(OrderItem::calculateSubTotal)
+                .sum();
+        orderInfo.setTotalPrice(totalPrice);
+    }
+
+    private void createOrderName(final List<OrderItem> orderItems) {
+        this.name = (orderItems.size() == 1) ?
+                orderItems.get(0).getItem().getName() :
+                orderItems.get(0).getItem().getName() + "외 " + (orderItems.size() - 1) + "개";
+    }
+
+    public void validateOrderItems(final List<OrderItem> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            throw new NotFoundOrderItemException("주문 아이템이 비어 있습니다");
+        }
+    }
+
+    public boolean isPayed() {
+        return this.status == OrderStatus.APPROVAL; // 승인
     }
 }

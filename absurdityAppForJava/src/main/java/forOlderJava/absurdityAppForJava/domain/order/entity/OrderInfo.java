@@ -19,11 +19,16 @@ public class OrderInfo {
     private Long brotherId;
     private int errandPrice;
     private boolean delStatus;
+    private int totalPrice;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
