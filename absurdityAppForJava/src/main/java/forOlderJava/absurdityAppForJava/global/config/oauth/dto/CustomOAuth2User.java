@@ -1,6 +1,6 @@
 package forOlderJava.absurdityAppForJava.global.config.oauth.dto;
 
-import forOlderJava.absurdityAppForJava.domain.member.service.RegisterMemberResponse;
+import forOlderJava.absurdityAppForJava.domain.member.service.response.RegisterMemberResponse;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

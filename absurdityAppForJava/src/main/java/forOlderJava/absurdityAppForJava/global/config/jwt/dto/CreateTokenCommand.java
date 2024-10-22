@@ -1,7 +1,7 @@
 package forOlderJava.absurdityAppForJava.global.config.jwt.dto;
 
 import forOlderJava.absurdityAppForJava.domain.member.MemberRole;
-import forOlderJava.absurdityAppForJava.domain.member.service.RegisterMemberResponse;
+import forOlderJava.absurdityAppForJava.domain.member.service.response.RegisterMemberResponse;
 
 public record CreateTokenCommand(Long memberId, MemberRole memberRole) {
 

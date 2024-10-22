@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "members")
 @Entity
 public class Member extends BaseTimeEntity {
@@ -49,7 +48,9 @@ public class Member extends BaseTimeEntity {
     private MemberGrade memberGrade;
 
     @Builder
-    public Member(String nickname, String email, String provider, String providerId, String location, MemberRole memberRole, MemberGrade memberGrade) {
+    public Member(final String nickname, final String email, final String provider, final String providerId, final String location, final MemberRole memberRole, final MemberGrade memberGrade) {
+        validateNickname(nickname);
+        validateEmail(email);
         this.nickname = nickname;
         this.email = email;
         this.provider = provider;

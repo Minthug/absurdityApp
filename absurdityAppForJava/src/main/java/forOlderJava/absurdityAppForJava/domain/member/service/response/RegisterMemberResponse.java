@@ -1,4 +1,4 @@
-package forOlderJava.absurdityAppForJava.domain.member.service;
+package forOlderJava.absurdityAppForJava.domain.member.service.response;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.MemberRole;

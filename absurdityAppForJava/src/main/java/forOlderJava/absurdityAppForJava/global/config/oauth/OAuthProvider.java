@@ -2,13 +2,15 @@ package forOlderJava.absurdityAppForJava.global.config.oauth;
 
 import forOlderJava.absurdityAppForJava.global.config.exception.InvalidProviderException;
 import forOlderJava.absurdityAppForJava.global.config.exception.OAuthUserInfoExtractException;
-import forOlderJava.absurdityAppForJava.global.config.oauth.dto.OAuthHttpMessage;
+import forOlderJava.absurdityAppForJava.global.config.oauth.client.GoogleMessageProvider;
+import forOlderJava.absurdityAppForJava.global.config.oauth.client.KakaoMessageProvider;
+import forOlderJava.absurdityAppForJava.global.config.oauth.client.NaverMessageProvider;
+import forOlderJava.absurdityAppForJava.global.config.oauth.client.OAuthHttpMessageProvider;
 import forOlderJava.absurdityAppForJava.global.config.oauth.dto.OAuthUserInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.swing.text.html.Option;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;

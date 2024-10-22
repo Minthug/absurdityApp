@@ -2,7 +2,9 @@ package forOlderJava.absurdityAppForJava.global.config.oauth.service;
 
 import forOlderJava.absurdityAppForJava.domain.member.MemberGrade;
 import forOlderJava.absurdityAppForJava.domain.member.MemberRole;
-import forOlderJava.absurdityAppForJava.domain.member.service.RegisterMemberResponse;
+import forOlderJava.absurdityAppForJava.domain.member.service.MemberService;
+import forOlderJava.absurdityAppForJava.domain.member.service.response.RegisterMemberResponse;
+import forOlderJava.absurdityAppForJava.domain.member.service.request.RegisterUserCommand;
 import forOlderJava.absurdityAppForJava.global.config.oauth.OAuthProvider;
 import forOlderJava.absurdityAppForJava.global.config.oauth.dto.CustomOAuth2User;
 import forOlderJava.absurdityAppForJava.global.config.oauth.dto.OAuthUserInfo;
@@ -31,7 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuthUserInfo oAuthUserInfo = OAuthProvider.getOAuthProvider(registrationId)
                 .getOAuthUserInfo(attributes);
 
-        RegistryUserCommand registryUserCommand = RegisterMemberCommand.of(
+        RegisterUserCommand registryUserCommand = RegisterUserCommand.of(
                 oAuthUserInfo.nickname(),
                 oAuthUserInfo.email(),
                 registrationId,
