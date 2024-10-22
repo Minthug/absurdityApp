@@ -6,6 +6,14 @@ import forOlderJava.absurdityAppForJava.global.config.jwt.dto.TokenPair;
 
 public interface TokenProvider {
 
+
+    /**
+     *
+     * @param createTokenCommand
+     * @return
+     */
+    String createToken(final CreateTokenCommand createTokenCommand);
+
     /**
      * 새로운 액세스 토큰과 리프레쉬 토큰 쌍을 생성합니다.
      *
