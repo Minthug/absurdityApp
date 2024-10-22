@@ -1,9 +1,8 @@
 package forOlderJava.absurdityAppForJava.domain.member;
 
 import forOlderJava.absurdityAppForJava.domain.member.exception.InvalidMemberException;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

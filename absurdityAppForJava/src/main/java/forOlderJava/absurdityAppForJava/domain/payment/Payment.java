@@ -2,7 +2,7 @@ package forOlderJava.absurdityAppForJava.domain.payment;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.order.entity;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import forOlderJava.absurdityAppForJava.global.exception.CustomException;
 import forOlderJava.absurdityAppForJava.global.exception.ErrorCode;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;

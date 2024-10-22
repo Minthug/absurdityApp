@@ -2,7 +2,7 @@ package forOlderJava.absurdityAppForJava.domain.cart;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.exception.NotFoundMemberException;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

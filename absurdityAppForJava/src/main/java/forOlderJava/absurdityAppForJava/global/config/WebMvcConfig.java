@@ -1,6 +1,6 @@
 package forOlderJava.absurdityAppForJava.global.config;
 
-import forOlderJava.absurdityAppForJava.global.config.oauth.resolver.LoginUserArgumentResolvers;
+import forOlderJava.absurdityAppForJava.global.auth.resolver.LoginUserArgumentResolvers;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

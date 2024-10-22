@@ -1,6 +1,6 @@
 package forOlderJava.absurdityAppForJava.domain.coupon;
 
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

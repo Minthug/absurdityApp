@@ -2,7 +2,7 @@ package forOlderJava.absurdityAppForJava.domain.cart;
 
 import forOlderJava.absurdityAppForJava.domain.cart.exception.InvalidCartItemException;
 import forOlderJava.absurdityAppForJava.domain.item.Item;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

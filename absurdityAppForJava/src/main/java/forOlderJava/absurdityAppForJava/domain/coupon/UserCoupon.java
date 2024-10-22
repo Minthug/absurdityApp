@@ -2,7 +2,7 @@ package forOlderJava.absurdityAppForJava.domain.coupon;
 
 import forOlderJava.absurdityAppForJava.domain.coupon.exception.InvalidUsedCouponException;
 import forOlderJava.absurdityAppForJava.domain.member.Member;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,8 @@
 package forOlderJava.absurdityAppForJava.global.config;
 
-import forOlderJava.absurdityAppForJava.global.config.jwt.JwtAuthenticationProvider;
-import forOlderJava.absurdityAppForJava.global.config.jwt.filter.JwtAuthenticationFilter;
-import forOlderJava.absurdityAppForJava.global.config.oauth.handler.OAuth2AuthenticationSuccessHandler;
+import forOlderJava.absurdityAppForJava.global.auth.jwt.JwtAuthenticationProvider;
+import forOlderJava.absurdityAppForJava.global.auth.jwt.filter.JwtAuthenticationFilter;
+import forOlderJava.absurdityAppForJava.global.auth.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.item;
 
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
-import forOlderJava.absurdityAppForJava.global.config.BaseTimeEntity;
+import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
