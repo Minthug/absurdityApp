@@ -31,7 +31,7 @@ public class KakaoMessageProvider implements OAuthHttpMessageProvider {
     public OAuthHttpMessage createUnlinkUserRequest(final FindUserDetailResponse userDetailResponse,
                                                     final OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         String accessToken = getAccessToken(oAuth2AuthorizedClient);
-        HttpEntity<MultiValueMap<String, String>> unlinkHttpMessage = createUnlinkUserRequest(userDetailResponse, accessToken);
+        HttpEntity<MultiValueMap<String, String>> unlinkHttpMessage = createUnlinkUserMessage(userDetailResponse, accessToken);
         return new OAuthHttpMessage(UNLINK_URI, unlinkHttpMessage, new HashMap<>());
     }
 
@@ -57,7 +57,7 @@ public class KakaoMessageProvider implements OAuthHttpMessageProvider {
     private HttpHeaders createHeader(final String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-        headers.set(HttpHeaders.AUTHORIZATION, MessageFormat.format("Bearer: {0}"), accessToken);
+        headers.set(HttpHeaders.AUTHORIZATION, MessageFormat.format("Bearer: {0}", accessToken));
         return headers;
     }
 
