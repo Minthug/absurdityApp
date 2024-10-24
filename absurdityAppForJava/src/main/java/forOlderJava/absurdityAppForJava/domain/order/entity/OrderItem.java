@@ -19,7 +19,6 @@ public class OrderItem {
     @Column(name = "ORDER_ITEM_ID")
     private Long id;
     private Integer quantity;
-    private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -29,10 +28,9 @@ public class OrderItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    public OrderItem(Item item, Integer quantity, Integer price) {
+    public OrderItem(Item item, Integer quantity) {
         this.item = item;
         this.quantity = quantity;
-        this.price = item.getPrice();
     }
 
     public int calculateSubTotal() {

@@ -38,6 +38,9 @@ public class Member extends BaseTimeEntity {
     @Column
     private String location;
 
+    @Column
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole memberRole;

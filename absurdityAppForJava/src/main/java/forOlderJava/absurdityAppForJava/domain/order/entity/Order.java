@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -35,6 +36,9 @@ public class Order extends BaseTimeEntity {
     @Embedded
     private Orderer orderer;
 
+    @Column(nullable = false, unique = true)
+    private String uuid;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ORDER_ID")
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -46,6 +50,18 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.CHECK;
+
+    @Builder
+    public Order(final Member member, final List<OrderItem> orderItems) {
+        this.member = member;
+        this.orderer = orderer != null ? orderer : new Orderer(member.getNickname(), member.getPhoneNumber(), member.getLocation());
+        this.orderInfo = orderInfo != null ? orderInfo : new OrderInfo();
+        this.uuid = UUID.randomUUID().toString();
+        validateOrderItems(orderItems);
+        createOrderName(orderItems);
+        setOrderItems(orderItems);
+        calculateTotalPrice();
+    }
 
     public void requestCancel() throws CustomException {
         if (orderInfo.getOrderStatus() == OrderStatus.SHIPPING ||
