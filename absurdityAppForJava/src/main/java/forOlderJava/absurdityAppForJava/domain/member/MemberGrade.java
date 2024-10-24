@@ -15,7 +15,7 @@ public enum MemberGrade {
 
     private final int minimumOrderCount;
 
-    private static MemberGrade calculateMemberGrade(int orderCount) {
+    public static MemberGrade calculateMemberGrade(int orderCount) {
         if (orderCount >= 20) {
             return RVIP;
         } else if (orderCount >= 10) {
