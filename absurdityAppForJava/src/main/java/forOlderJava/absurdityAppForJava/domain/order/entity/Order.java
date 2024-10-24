@@ -1,10 +1,10 @@
 package forOlderJava.absurdityAppForJava.domain.order.entity;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import forOlderJava.absurdityAppForJava.global.exception.CustomException;
 import forOlderJava.absurdityAppForJava.global.exception.ErrorCode;
-import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,7 +69,7 @@ public class Order extends BaseTimeEntity {
         orderInfo.getOrderStatus() == OrderStatus.COOKING) {
             throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
         }
-        orderInfo.setOrderStatus(OrderStatus.OLDER_CANCEL_REQUEST);
+        orderInfo.updateOrderStatus(OrderStatus.OLDER_CANCEL_REQUEST);
     }
 
     public void updateOrderStatus(OrderStatus orderStatus) {
@@ -103,4 +103,5 @@ public class Order extends BaseTimeEntity {
     public boolean isPayed() {
         return this.status == OrderStatus.APPROVAL; // 승인
     }
+
 }

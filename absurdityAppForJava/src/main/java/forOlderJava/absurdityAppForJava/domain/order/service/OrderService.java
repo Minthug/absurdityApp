@@ -1,5 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.order.service;
 
+import forOlderJava.absurdityAppForJava.domain.coupon.Coupon;
+import forOlderJava.absurdityAppForJava.domain.coupon.UserCoupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.repository.UserCouponRepository;
 import forOlderJava.absurdityAppForJava.domain.item.Item;
 import forOlderJava.absurdityAppForJava.domain.item.exception.NotFoundItemException;
@@ -8,10 +10,13 @@ import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.exception.NotFoundMemberException;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
+import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
+import forOlderJava.absurdityAppForJava.domain.order.service.request.UpdateOrderByCouponCommand;
 import forOlderJava.absurdityAppForJava.domain.order.service.response.CreateOrderResponse;
+import forOlderJava.absurdityAppForJava.domain.order.service.response.UpdateOrderByCouponResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,25 @@ public class OrderService {
         orderRepository.save(order).getId();
 
         return CreateOrderResponse.from(order);
+    }
+
+    @Transactional
+    public UpdateOrderByCouponResponse updateOrderByCoupon(final UpdateOrderByCouponCommand updateOrderByCouponCommand) {
+        OrderInfo findOrder = getOrderByOrderIdAndMemberId(updateOrderByCouponCommand.olderId(), updateOrderByCouponCommand.memberId()).getOrderInfo();
+        UserCoupon findUserCoupon = findUserCouponByIdWithCoupon(updateOrderByCouponCommand.couponId());
+
+        validateCoupon(findOrder, findUserCoupon.getCoupon());
+        findOrder.setUserCoupon(findUserCoupon);
+
+        return UpdateOrderByCouponResponse.of(findOrder, findUserCoupon.getCoupon());
+    }
+
+    private void validateCoupon(OrderInfo findOrder, Coupon coupon) {
+
+    }
+
+    private Order getOrderByOrderIdAndMemberId(Long aLong, Long aLong1) {
+        return null;
     }
 
     private List<OrderItem> createOrderItem(final List<CreateOrderItemRequest> orderItemRequests) {
