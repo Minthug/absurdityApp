@@ -15,18 +15,22 @@ import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepositor
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
+import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.UpdateOrderByCouponCommand;
-import forOlderJava.absurdityAppForJava.domain.order.service.response.CreateOrderResponse;
-import forOlderJava.absurdityAppForJava.domain.order.service.response.UpdateOrderByCouponResponse;
+import forOlderJava.absurdityAppForJava.domain.order.service.response.*;
+import forOlderJava.absurdityAppForJava.domain.payment.service.request.FindPayedOrdersCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +68,58 @@ public class OrderService {
         findOrder.setUserCoupon(findUserCoupon);
 
         return UpdateOrderByCouponResponse.of(findOrder, findUserCoupon.getCoupon());
+    }
+
+    @Transactional
+    public void updateOrderStatus() {
+        LocalDateTime expiredTime = LocalDateTime.now().minusSeconds(30);
+        List<OrderStatus> statusList = List.of(OrderStatus.CHECK, OrderStatus.APPROVAL);
+
+        List<Order> expireOrders = orderRepository.findByStatusInBeforeExpiredTime(expiredTime, statusList);
+
+        for (Order expiredOrder : expireOrders) {
+            updateItemQuantity(expiredOrder);
+            expiredOrder.updateOrderStatus(OrderStatus.YOUNGER_CANCEL);
+        }
+    }
+
+    @Transactional
+    public void cancelOrder(final Order order) {
+        order.updateOrderStatus(OrderStatus.OLDER_CANCEL);
+        order.unUseCoupon();
+        order.getOrderItems().forEach(
+                orderItem -> itemRepository.increaseQuantity(orderItem.getItem().getId(), orderItem.getQuantity()));
+    }
+
+    @Transactional
+    public void deleteOrder(final Long orderId, final Long memberId) {
+        Order order = getOrderByOrderIdAndMemberId(orderId, memberId);
+        orderRepository.delete(order);
+    }
+
+    @Transactional(readOnly = true)
+    public FindOrderDetailResponse findOrderByIdAndMemberId(final Long memberId, final Long orderId) {
+        final Order order = getOrderByOrderIdAndMemberId(memberId, orderId);
+        return FindOrderDetailResponse.from(order);
+    }
+
+    @Transactional(readOnly = true)
+    public FindOrdersResponse findOrders(final Long memberId, final Integer page) {
+        final Page<Order> pagination = orderRepository.findByMember_MemberId(memberId, PageRequest.of(page, PAGE_SIZE));
+
+        return FindOrdersResponse.of(pagination.getContent(), pagination.getTotalPages());
+    }
+
+    @Transactional(readOnly = true)
+    public FindPayedOrdersResponse findPayedOrders(FindPayedOrdersCommand findPayedOrdersCommand) {
+
+    }
+
+    private static void updateItemQuantity(Order order) {
+        List<OrderItem> orderItems = order.getOrderItems();
+        for (OrderItem orderItem : orderItems) {
+            orderItem.getItem().increaseQuantity(orderItem.getQuantity());
+        }
     }
 
     private UserCoupon findUserCouponByIdWithCoupon(Long memberCouponId) {

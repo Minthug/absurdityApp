@@ -1,5 +1,6 @@
 package forOlderJava.absurdityAppForJava.domain.order.entity;
 
+import forOlderJava.absurdityAppForJava.domain.coupon.UserCoupon;
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
@@ -50,6 +51,10 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.CHECK;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_coupon_id")
+    private UserCoupon userCoupon;
 
     @Builder
     public Order(final Member member, final List<OrderItem> orderItems) {
@@ -104,4 +109,15 @@ public class Order extends BaseTimeEntity {
         return this.status == OrderStatus.APPROVAL; // 승인
     }
 
+    public void useCoupon() {
+        if (userCoupon != null) {
+            userCoupon.use();
+        }
+    }
+
+    public void unUseCoupon() {
+        if (userCoupon != null) {
+            userCoupon.unUse();
+        }
+    }
 }
