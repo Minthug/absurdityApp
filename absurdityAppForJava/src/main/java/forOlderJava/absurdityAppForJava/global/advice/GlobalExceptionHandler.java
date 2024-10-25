@@ -3,7 +3,7 @@ package forOlderJava.absurdityAppForJava.global.advice;
 import com.google.api.gax.rpc.UnauthenticatedException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.InvalidOrderStatusException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.OrderException;
-import forOlderJava.absurdityAppForJava.domain.order.exception.OrderNotFoundException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.global.auth.exception.AuthException;
 import forOlderJava.absurdityAppForJava.global.auth.exception.InvalidJwtException;
 import forOlderJava.absurdityAppForJava.global.auth.exception.OAuthUnlinkFailureException;
@@ -60,7 +60,7 @@ class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
-    @ExceptionHandler({InvalidOrderStatusException.class, OrderNotFoundException.class})
+    @ExceptionHandler({InvalidOrderStatusException.class, NotFoundOrderException.class})
     ResponseEntity<ErrorTemplate> handleOrderException(OrderException e) {
         log.error("Order error: {}", e.getMessage());
         return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -15,11 +15,13 @@ public class Orderer {
     private String location;
 
     @Builder
-        public Orderer(String nickname, String phoneNumber, String location) {
+        public Orderer(String nickname, Long olderId, String phoneNumber, String location) {
         validateNickname(nickname);
         validatePhoneNumber(phoneNumber);
         validateLocation(location);
+
         this.nickname = nickname;
+        this.olderId = olderId;
         this.phoneNumber = phoneNumber;
         this.location = location;
     }

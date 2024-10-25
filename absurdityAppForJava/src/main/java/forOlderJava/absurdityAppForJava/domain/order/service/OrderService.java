@@ -2,8 +2,11 @@ package forOlderJava.absurdityAppForJava.domain.order.service;
 
 import forOlderJava.absurdityAppForJava.domain.coupon.Coupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.UserCoupon;
+import forOlderJava.absurdityAppForJava.domain.coupon.exception.InvalidCouponException;
+import forOlderJava.absurdityAppForJava.domain.coupon.exception.NotFoundUserCouponException;
 import forOlderJava.absurdityAppForJava.domain.coupon.repository.UserCouponRepository;
 import forOlderJava.absurdityAppForJava.domain.item.Item;
+import forOlderJava.absurdityAppForJava.domain.item.exception.InvalidItemException;
 import forOlderJava.absurdityAppForJava.domain.item.exception.NotFoundItemException;
 import forOlderJava.absurdityAppForJava.domain.item.repository.ItemRepository;
 import forOlderJava.absurdityAppForJava.domain.member.Member;
@@ -12,6 +15,8 @@ import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepositor
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.UpdateOrderByCouponCommand;
@@ -61,12 +66,20 @@ public class OrderService {
         return UpdateOrderByCouponResponse.of(findOrder, findUserCoupon.getCoupon());
     }
 
-    private void validateCoupon(OrderInfo findOrder, Coupon coupon) {
-
+    private UserCoupon findUserCouponByIdWithCoupon(Long memberCouponId) {
+        return userCouponRepository.findByIdWithCoupon(memberCouponId)
+                .orElseThrow(() -> new NotFoundUserCouponException("존재하지 않는 쿠폰입니다."));
     }
 
-    private Order getOrderByOrderIdAndMemberId(Long aLong, Long aLong1) {
-        return null;
+    private void validateCoupon(OrderInfo order, Coupon coupon) {
+        if (order.getPrice() < coupon.getMinOrderPrice()) {
+            throw new InvalidCouponException("총 주문 금액이 쿠폰 최소 사용 금액보다 작습니다");
+        }
+    }
+
+    public Order getOrderByOrderIdAndMemberId(final Long orderId, final Long memberId) {
+        return orderRepository.findByOrderIdAndMember_MemberId(orderId, memberId)
+                .orElseThrow(() -> new NotFoundOrderException("order가 존재하지 않습니다"));
     }
 
     private List<OrderItem> createOrderItem(final List<CreateOrderItemRequest> orderItemRequests) {
@@ -85,8 +98,10 @@ public class OrderService {
         return orderItems;
     }
 
-    private void validateItemQuantity(Item findItem, Integer quantity) {
-
+    private void validateItemQuantity(final Item findItem, final Integer quantity) {
+        if (findItem.getQuantity() - quantity < 0) {
+            throw new InvalidItemException("상품의 재고 수량이 부족합니다");
+        }
     }
 
     private Member findMemberByMemberId(final Long memberId) {

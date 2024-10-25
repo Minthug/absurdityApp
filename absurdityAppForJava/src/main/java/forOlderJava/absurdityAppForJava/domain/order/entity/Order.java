@@ -54,7 +54,7 @@ public class Order extends BaseTimeEntity {
     @Builder
     public Order(final Member member, final List<OrderItem> orderItems) {
         this.member = member;
-        this.orderer = orderer != null ? orderer : new Orderer(member.getNickname(), member.getPhoneNumber(), member.getLocation());
+        this.orderer = orderer != null ? orderer : new Orderer(member.getNickname(),member.getId(), member.getPhoneNumber(), member.getLocation());
         this.orderInfo = orderInfo != null ? orderInfo : new OrderInfo();
         this.uuid = UUID.randomUUID().toString();
         validateOrderItems(orderItems);

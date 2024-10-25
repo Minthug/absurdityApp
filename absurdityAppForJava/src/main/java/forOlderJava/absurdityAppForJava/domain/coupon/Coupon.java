@@ -29,6 +29,9 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate endAt;
 
+    @Column(nullable = false)
+    private Integer minOrderPrice;
+
     @Builder
     public Coupon(Integer discount, String name, String description, LocalDate endAt) {
         validateEndAt(endAt);
