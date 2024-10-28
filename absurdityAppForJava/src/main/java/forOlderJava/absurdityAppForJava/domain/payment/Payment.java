@@ -33,9 +33,10 @@ public class Payment extends BaseTimeEntity {
     private Order order;
 
     @Builder
-    public Payment(Member member, Order order) {
+    public Payment(Member member, Order order, PaymentStatus paymentStatus) {
         this.member = member;
         this.order = order;
+        this.paymentStatus = paymentStatus;
     }
 
     public void changeStatus(final PaymentStatus paymentStatus) {

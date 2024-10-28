@@ -50,7 +50,7 @@ public class Order extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.CHECK;
+    private OrderStatus status = OrderStatus.PENDING;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_coupon_id")
@@ -119,5 +119,9 @@ public class Order extends BaseTimeEntity {
         if (userCoupon != null) {
             userCoupon.unUse();
         }
+    }
+
+    public boolean isMisMatchPrice(int amount) {
+        return amount != this.orderInfo.getPrice();
     }
 }

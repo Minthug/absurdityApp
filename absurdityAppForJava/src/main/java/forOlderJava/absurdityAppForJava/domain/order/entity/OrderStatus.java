@@ -17,7 +17,9 @@ public enum OrderStatus {
     YOUNGER_CANCEL("반항"),
     COOKING("요리 중"),
     SHIPPING("가능 중"),
-    COME_OUT("나오세요");
+    COME_OUT("나오세요"),
+    PAYING("결제"),
+    PENDING("보류 중");
 
     private final String value;
     private final List<OrderStatus> nextStatus;
@@ -34,6 +36,8 @@ public enum OrderStatus {
         OLDER_CANCEL_REQUEST.nextStatus.addAll(Arrays.asList(OLDER_CANCEL));
         COOKING.nextStatus.addAll(Arrays.asList(SHIPPING));
         SHIPPING.nextStatus.addAll(Arrays.asList(COME_OUT));
+        PAYING.nextStatus.addAll(Arrays.asList(PENDING, CHECK));  // 결제 상태 전이 추가
+        PENDING.nextStatus.addAll(Arrays.asList(APPROVAL));// 결제 완료 후 상태 전이
     }
 
     public boolean canTransitionTo(OrderStatus nextStatus) {
@@ -54,4 +58,31 @@ public enum OrderStatus {
     public boolean isCancelable() {
         return this != SHIPPING && this != COME_OUT && this != COOKING;
     }
+
+    public boolean isPayable() {
+        return this == CHECK;
+    }
+
+    public boolean isPaying() {
+        return this == PAYING;
+    }
+
+    public boolean isPending() {
+        return this == PENDING;
+    }
+
+    public boolean isCompleted() {
+        return this == APPROVAL || this == COOKING ||
+                this == SHIPPING || this == COME_OUT;
+    }
+
+    public boolean isPaymentProcessing() {
+        return this == PAYING || this == PENDING;
+    }
+
+    public String getInvalidTransitionMessage(OrderStatus targetStatus) {
+        return String.format("잘못된 주문 상태 변경입니다: %s(%s) -> %s(%s)",
+                this, this.value, targetStatus, targetStatus.getValue());
+    }
 }
+
