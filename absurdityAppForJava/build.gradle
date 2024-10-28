@@ -46,6 +46,8 @@ dependencies {
 	implementation 'com.google.guava:guava:30.1.1-jre'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	implementation 'net.minidev:json-smart:2.5.1'
+
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework:spring-messaging:6.1.7'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'

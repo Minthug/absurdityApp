@@ -1,5 +1,6 @@
 package forOlderJava.absurdityAppForJava.domain.order.service;
 
+import com.google.api.gax.rpc.UnauthenticatedException;
 import forOlderJava.absurdityAppForJava.domain.coupon.Coupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.UserCoupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.exception.InvalidCouponException;
@@ -18,6 +19,7 @@ import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.UnauthorizedOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.UpdateOrderByCouponCommand;
@@ -112,7 +114,21 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public FindPayedOrdersResponse findPayedOrders(FindPayedOrdersCommand findPayedOrdersCommand) {
+        checkUserHasYoungerAuthority(findPayedOrdersCommand.memberId());
+        PageRequest pageRequest = PageRequest.of(findPayedOrdersCommand.page(), PAGE_SIZE);
+        Page<Order> findOrders = orderRepository.findALlStatusInPayed(pageRequest);
+        return FindPayedOrdersResponse.of(
+                findOrders.getContent(),
+                findOrders.getNumber(),
+                findOrders.getTotalElements()
+        );
+    }
 
+    private void checkUserHasYoungerAuthority(Long memberId) {
+        Member member = findMemberByMemberId(memberId);
+        if (!member.isYounger()) {
+            throw new UnauthorizedOrderException("권한이 없습니다");
+        }
     }
 
     private static void updateItemQuantity(Order order) {
