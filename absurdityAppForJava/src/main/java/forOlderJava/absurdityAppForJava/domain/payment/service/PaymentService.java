@@ -27,10 +27,10 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderService orderService;
 
-    @Value("")
+    @Value("${spring.payment.toss.success-url}")
     private String successCallbackUrl;
 
-    @Value("")
+    @Value("${spring.payment.toss.fail-url}")
     private String failCallbackUrl;
 
     @Transactional

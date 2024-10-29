@@ -21,10 +21,10 @@ public class PaymentClient {
 
     private final ApiService apiService;
 
-    @Value("")
+    @Value("${spring.payment.toss.secret-key}")
     private String secretKey;
 
-    @Value("")
+    @Value("${spring.payment.toss.confirm-url}")
     private String confirmUrl;
 
     public void confirmPayment(final String uuid, final String paymentKey, final Integer amount) {

@@ -47,7 +47,7 @@ spring:
 
   payment:
     toss:
-      success-url:
-      fail-url:
-      secret-key:
-      confirm-url:
+      success-url: http://localhost:8080/v1/pays/toss/success
+      fail-url: http://localhost:8080/v1/pays/toss/fail
+      secret-key: test_sk_Ba5PzR0ArnyWngvd5wnkVvmYnNeD
+      confirm-url: https://api.tosspayments.com/v1/payments/confirm
