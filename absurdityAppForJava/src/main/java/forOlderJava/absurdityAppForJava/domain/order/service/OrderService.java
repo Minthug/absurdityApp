@@ -154,6 +154,11 @@ public class OrderService {
                 .orElseThrow(() -> new NotFoundOrderException("order가 존재하지 않습니다"));
     }
 
+    public Order getOrderByUuidAndMemberId(final String uuid, final Long memberId) {
+        return orderRepository.findByUuidAndMember_MemberId(uuid, memberId)
+                .orElseThrow(() -> new NotFoundOrderException("유저가 일치하지 않습니다"));
+    }
+
     private List<OrderItem> createOrderItem(final List<CreateOrderItemRequest> orderItemRequests) {
         List<OrderItem> orderItems = new ArrayList<>();
 

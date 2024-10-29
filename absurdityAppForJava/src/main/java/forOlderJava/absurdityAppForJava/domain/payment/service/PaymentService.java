@@ -4,14 +4,16 @@ import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
 import forOlderJava.absurdityAppForJava.domain.order.exception.InvalidOrderStatusException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotPayingOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.service.OrderService;
 import forOlderJava.absurdityAppForJava.domain.payment.Payment;
 import forOlderJava.absurdityAppForJava.domain.payment.PaymentStatus;
 import forOlderJava.absurdityAppForJava.domain.payment.exception.DuplicatePayException;
-import forOlderJava.absurdityAppForJava.domain.payment.exception.PaymentException;
+import forOlderJava.absurdityAppForJava.domain.payment.exception.NotFoundPaymentException;
 import forOlderJava.absurdityAppForJava.domain.payment.exception.PaymentFailException;
 import forOlderJava.absurdityAppForJava.domain.payment.repository.PaymentRepository;
 import forOlderJava.absurdityAppForJava.domain.payment.service.response.PaymentRequestResponse;
+import forOlderJava.absurdityAppForJava.domain.payment.service.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,82 @@ public class PaymentService {
 
         return PaymentRequestResponse.from(order, successCallbackUrl, failCallbackUrl);
     }
+
+    @Transactional
+    public PaymentResponse processSuccessPayment(Long memberId, String uuid, String paymentKey, Integer amount) {
+        Payment payment = findAndValidatePayment(uuid, memberId);
+        Order order = findAndValidateOrder(uuid, memberId);
+
+        validatePaymentProcess(payment, order, amount);
+
+        completePayment(payment, order, paymentKey);
+
+        return new PaymentResponse(PaymentStatus.SUCCESS.name(), null);
+
+    }
+
+    private Order findAndValidateOrder(String uuid, Long memberId) {
+        return orderService.getOrderByUuidAndMemberId(uuid, memberId);
+    }
+
+    private Payment findAndValidatePayment(String uuid, Long memberId) {
+        return paymentRepository.findByOrder_UuidAndMember_MemberId(uuid, memberId)
+                .orElseThrow(() -> new NotFoundPaymentException(("결제 정보를 찾을수 없습니다.")));
+    }
+
+    private void validatePaymentProcess(Payment payment, Order order, Integer amount) {
+        validatePaymentNotProcessed(payment);
+        validateOrderPaymentInProcess(order);
+        validatePaymentAmount(payment, amount);
+    }
+
+    private void validatePaymentAmount(Payment payment, Integer amount) {
+        if (!(payment.getOrder().getOrderInfo().getPrice() == amount)) {
+            throw new PaymentAmountMisMatchException("결제 금액이 일치하지 않습니다");
+        }
+    }
+
+    private void completePayment(Payment payment, Order order, String paymentKey) {
+        payment.changeStatus(PaymentStatus.SUCCESS);
+        payment.setPaymentKey(paymentKey);
+        order.changeStatus(OrderStatus.CHECK);
+    }
+
+    @Transactional
+    public PaymentResponse processFailPayment(Long memberId, String uuid, String errorMessage) {
+        Payment payment = findAndValidatePayment(uuid, memberId);
+        Order order = findAndValidateOrder(uuid, memberId);
+
+        validatePaymentProcessing(payment, order, errorMessage);
+
+        handleFailedPayment(payment, order, errorMessage);
+
+        return new PaymentResponse(PaymentStatus.FAILED.name(), errorMessage);
+    }
+
+    private void validatePaymentProcessing(Payment payment, Order order, String errorMessage) {
+        validatePaymentNotProcessed(payment);
+        validateOrderPaymentInProcess(order);
+    }
+
+    private void validateOrderPaymentInProcess(Order order) {
+        if (order.getStatus() != OrderStatus.PAYING) {
+            throw new NotPayingOrderException("결제가 진행중인 주문이 아닙니다");
+        }
+    }
+
+    private void validatePaymentNotProcessed(Payment payment) {
+        if (payment.getPaymentStatus() != PaymentStatus.PENDING) {
+            throw new DuplicatePayException("이미 처리된 결제 입니다");
+        }
+    }
+
+    private void handleFailedPayment(Payment payment, Order order, String errorMessage) {
+        payment.changeStatus(PaymentStatus.FAILED);
+        payment.setErrorMessage(errorMessage);
+        orderService.cancelOrder(order);
+    }
+
 
     private Payment createAndSavePayment(Order order) {
         Payment payment = Payment.builder()

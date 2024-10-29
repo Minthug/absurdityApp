@@ -109,6 +109,10 @@ public class Order extends BaseTimeEntity {
         return this.status == OrderStatus.APPROVAL; // 승인
     }
 
+    public void changeStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
+    }
+
     public void useCoupon() {
         if (userCoupon != null) {
             userCoupon.use();

@@ -20,6 +20,9 @@ public class Payment extends BaseTimeEntity {
     @Setter
     private String paymentKey;
 
+    @Setter
+    private String errorMessage;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
@@ -43,9 +46,9 @@ public class Payment extends BaseTimeEntity {
         this.paymentStatus = paymentStatus;
     }
 
-    public boolean isMisMatchPrice(final int amount) {
-        return this.order.isMisMatchPrice(amount);
-    }
+//    public boolean isMisMatchPrice(final int amount) {
+//        return this.order.isMisMatchPrice(amount);
+//    }
 
     public boolean isMisMatchPrice(final PaymentStatus paymentStatus) {
         return this.paymentStatus != paymentStatus;
