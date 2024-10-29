@@ -5,6 +5,7 @@ import forOlderJava.absurdityAppForJava.domain.payment.service.response.TossPaym
 import forOlderJava.absurdityAppForJava.global.infrastructure.ApiService;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,8 +21,10 @@ public class PaymentClient {
 
     private final ApiService apiService;
 
+    @Value("")
     private String secretKey;
 
+    @Value("")
     private String confirmUrl;
 
     public void confirmPayment(final String uuid, final String paymentKey, final Integer amount) {
