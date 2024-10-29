@@ -78,4 +78,5 @@ public class Item extends BaseTimeEntity {
         this.description = description;
         this.discount = discount;
     }
+
 }
