@@ -60,7 +60,7 @@ public class PaymentService {
     }
 
     private Payment findAndValidatePayment(String uuid, Long memberId) {
-        return paymentRepository.findByOrder_UuidAndMember_MemberId(uuid, memberId)
+        return paymentRepository.findByOrder_UuidAndMember_Id(uuid, memberId)
                 .orElseThrow(() -> new NotFoundPaymentException(("결제 정보를 찾을수 없습니다.")));
     }
 

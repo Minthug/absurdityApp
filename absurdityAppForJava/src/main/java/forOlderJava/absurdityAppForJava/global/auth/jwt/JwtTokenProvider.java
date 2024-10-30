@@ -27,17 +27,20 @@ public class JwtTokenProvider implements TokenProvider {
     private static final String ACCESS_TOKEN = "ACCESS";
     private static final String REFRESH_TOKEN = "REFRESH";
 
+    @Value("${spring.jwt.issuer}")
     private final String issuer;
+    @Value("${spring.jwt.client-secret}")
     private final String clientSecret;
+
     private final int accessTokenExpirySeconds;
     private final int refreshTokenExpirySeconds;
     private final Algorithm algorithm;
     private final JWTVerifier jwtVerifier;
 
-    public JwtTokenProvider(@Value("${jwt.issuer}") final String issuer,
-                            @Value("${jwt.client-secret}") final String clientSecret,
-                            @Value("${jwt.access-expiry-seconds}") final int accessTokenExpirySeconds,
-                            @Value("${jwt.refresh-expiry-seconds}") final int refreshTokenExpirySeconds) {
+    public JwtTokenProvider(@Value("${spring.jwt.issuer}") final String issuer,
+                            @Value("${spring.jwt.client-secret}") final String clientSecret,
+                            @Value("${spring.jwt.access-expiry-seconds}") final int accessTokenExpirySeconds,
+                            @Value("${spring.jwt.refresh-expiry-seconds}") final int refreshTokenExpirySeconds) {
         this.issuer = issuer;
         this.clientSecret = clientSecret;
         this.accessTokenExpirySeconds = accessTokenExpirySeconds;

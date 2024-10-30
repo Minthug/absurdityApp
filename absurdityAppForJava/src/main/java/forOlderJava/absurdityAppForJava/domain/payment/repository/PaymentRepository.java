@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    Optional<Payment> findByOrder_UuidAndMember_MemberId(String uuid, Long memberId);
+    Optional<Payment> findByOrder_UuidAndMember_Id(String uuid, Long memberId);
 
     void deleteByMember(Member member);
 }

@@ -60,8 +60,8 @@ spring:
       database: 0                    # Redis database 인덱스
 
   jwt:
-    issuer:
-    client-secret:
+    issuer: absurdity-app
+    client-secret: c677d5ad13c6b8e0e09bf5cf4412caaa6d178e94f7470dcf53cec5b5f3d13663
     access-expiry-seconds: 3600
     refresh-expiry-seconds: 1209600
 
