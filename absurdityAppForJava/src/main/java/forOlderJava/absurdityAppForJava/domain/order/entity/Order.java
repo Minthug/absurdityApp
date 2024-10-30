@@ -26,7 +26,7 @@ public class Order extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private Long id;
 
     private String name;
@@ -41,7 +41,6 @@ public class Order extends BaseTimeEntity {
     private String uuid;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "ORDER_ID")
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,9 +51,13 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_coupon_id")
-    private UserCoupon userCoupon;
+    public UserCoupon getUserCoupon() {
+        return orderInfo.getUserCoupon();
+    }
+
+    public void applyUserCoupon(UserCoupon userCoupon) {
+        orderInfo.applyUserCoupon(userCoupon);
+    }
 
     @Builder
     public Order(final Member member, final List<OrderItem> orderItems) {
@@ -113,17 +116,6 @@ public class Order extends BaseTimeEntity {
         this.status = orderStatus;
     }
 
-    public void useCoupon() {
-        if (userCoupon != null) {
-            userCoupon.use();
-        }
-    }
-
-    public void unUseCoupon() {
-        if (userCoupon != null) {
-            userCoupon.unUse();
-        }
-    }
 
     public boolean isMisMatchPrice(int amount) {
         return amount != this.orderInfo.getPrice();

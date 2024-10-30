@@ -21,14 +21,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     void deleteByMember(Member member);
 
-    Optional<Order> findByOrderIdAndMember_MemberId(Long orderId, Long memberId);
+    Optional<Order> findByIdAndMember_Id(Long id, Long memberId);
 
-    Optional<Order> findByUuidAndMember_MemberId(String uuid, Long memberId);
+    Optional<Order> findByUuidAndMember_Id(String uuid, Long memberId);
 
     @Query("SELECT o FROM Order o where o.createdAt <= :expiredTime AND o.status IN :statusList")
-    List<Order> findByStatusInBeforeExpiredTime(@Param("expiredTime") LocalDateTime expiredTime,@Param("statusList") List<OrderStatus> statusList);
+    List<Order> findByStatusInBeforeExpiredTime(@Param("expiredTime") LocalDateTime expiredTime,
+                                                @Param("statusList") List<OrderStatus> statusList);
 
-    Page<Order> findByMember_MemberId(Long memberId, PageRequest of);
+    Page<Order> findByMember_Id(Long memberId, PageRequest of);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT o FROM Order o where o.id = :orderId")

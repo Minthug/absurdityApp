@@ -49,6 +49,19 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
+    public String createToken(final CreateTokenCommand createTokenCommand) {
+        Date now = new Date();
+        Date expiresAt = new Date(now.getTime() + accessTokenExpirySeconds * 1000L);
+        return JWT.create()
+                .withIssuer(issuer)
+                .withIssuedAt(now)
+                .withExpiresAt(expiresAt)
+                .withClaim(MEMBER_ID, createTokenCommand.memberId())
+                .withClaim(ROLE, createTokenCommand.memberRole().getValue())
+                .sign(algorithm);
+    }
+
+    @Override
     public TokenPair createTokenPair(final CreateTokenCommand createTokenCommand) {
         String accessToken = createToken(createTokenCommand, ACCESS_TOKEN, accessTokenExpirySeconds);
         String refreshToken = createToken(createTokenCommand, REFRESH_TOKEN, refreshTokenExpirySeconds);
@@ -70,7 +83,6 @@ public class JwtTokenProvider implements TokenProvider {
             throw new InvalidJwtException("유효하지 않은 Refresh 토큰 입니다.");
         }
     }
-
 
     public String createToken(final CreateTokenCommand createTokenCommand, String tokenType, int expirySeconds) {
         Date now = new Date();

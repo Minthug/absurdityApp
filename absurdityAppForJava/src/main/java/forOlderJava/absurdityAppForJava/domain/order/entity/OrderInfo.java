@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderInfo {
 
+    @Column(name = "info_order_id")
     private Long orderId;
     private Long brotherId;
     private int price;
@@ -19,23 +20,34 @@ public class OrderInfo {
     private int totalPrice;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_coupon_id")
+    @JoinColumn(name = "user_coupon_id", insertable = false, updatable = false)
     private UserCoupon userCoupon;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @Builder
-    public static OrderInfo createInitialOrderInfo(Long orderId, Long brotherId, int price, int errandPrice,
-                                                   boolean delStatus, int totalPrice, OrderStatus orderStatus) {
+    public static OrderInfo createInitialOrderInfo(Long orderId, Long brotherId, int price, int errandPrice) {
         return OrderInfo.builder()
                 .orderId(orderId)
                 .brotherId(brotherId)
                 .price(0)
                 .errandPrice(errandPrice)
                 .delStatus(false)
+                .totalPrice(errandPrice)
                 .orderStatus(OrderStatus.CHECK)
                 .build();
+    }
+
+    @Builder
+    public OrderInfo(Long orderId, Long brotherId, int price, int errandPrice, boolean delStatus, int totalPrice, UserCoupon userCoupon, OrderStatus orderStatus) {
+        this.orderId = orderId;
+        this.brotherId = brotherId;
+        this.price = price;
+        this.errandPrice = errandPrice;
+        this.delStatus = delStatus;
+        this.totalPrice = totalPrice;
+        this.userCoupon = userCoupon;
+        this.orderStatus = orderStatus != null ? orderStatus : OrderStatus.CHECK;
     }
 
     public void applyUserCoupon(final UserCoupon newCoupon) {
@@ -77,6 +89,19 @@ public class OrderInfo {
                     String.format("잘못된 주문 상태 변경입니다: %s(%s) -> %s(%s)",
                     this.orderStatus, this.orderStatus.getValue(),
                     newStatus, newStatus.getValue()));
+        }
+    }
+
+
+    public void useCoupon() {
+        if (userCoupon != null) {
+            userCoupon.use();
+        }
+    }
+
+    public void unUseCoupon() {
+        if (userCoupon != null) {
+            userCoupon.unUse();
         }
     }
 

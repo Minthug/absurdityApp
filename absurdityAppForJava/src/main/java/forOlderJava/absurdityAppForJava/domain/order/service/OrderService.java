@@ -88,7 +88,7 @@ public class OrderService {
     @Transactional
     public void cancelOrder(final Order order) {
         order.updateOrderStatus(OrderStatus.OLDER_CANCEL);
-        order.unUseCoupon();
+        order.getOrderInfo().unUseCoupon();
         order.getOrderItems().forEach(
                 orderItem -> itemRepository.increaseQuantity(orderItem.getItem().getId(), orderItem.getQuantity()));
     }
@@ -107,7 +107,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public FindOrdersResponse findOrders(final Long memberId, final Integer page) {
-        final Page<Order> pagination = orderRepository.findByMember_MemberId(memberId, PageRequest.of(page, PAGE_SIZE));
+        final Page<Order> pagination = orderRepository.findByMember_Id(memberId, PageRequest.of(page, PAGE_SIZE));
 
         return FindOrdersResponse.of(pagination.getContent(), pagination.getTotalPages());
     }
@@ -150,12 +150,12 @@ public class OrderService {
     }
 
     public Order getOrderByOrderIdAndMemberId(final Long orderId, final Long memberId) {
-        return orderRepository.findByOrderIdAndMember_MemberId(orderId, memberId)
+        return orderRepository.findByIdAndMember_Id(orderId, memberId)
                 .orElseThrow(() -> new NotFoundOrderException("order가 존재하지 않습니다"));
     }
 
     public Order getOrderByUuidAndMemberId(final String uuid, final Long memberId) {
-        return orderRepository.findByUuidAndMember_MemberId(uuid, memberId)
+        return orderRepository.findByUuidAndMember_Id(uuid, memberId)
                 .orElseThrow(() -> new NotFoundOrderException("유저가 일치하지 않습니다"));
     }
 
