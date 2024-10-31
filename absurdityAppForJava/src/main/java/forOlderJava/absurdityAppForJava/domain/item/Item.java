@@ -47,19 +47,24 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private int discount;
 
+    @Min(value = 1, message = "주문 수량은 최소 0이상 이어야 합니다")
+    @Column(nullable = false)
+    private int maxBuyQuantity;
+
     private boolean isDeleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
-    public Item(String name, int price, String description, double rate, int quantity, int discount) {
+    public Item(String name, int price, String description, double rate, int quantity, int discount, int maxBuyQuantity) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.rate = rate;
         this.quantity = quantity;
         this.discount = discount;
+        this.maxBuyQuantity = maxBuyQuantity;
     }
 
     public void decreaseQuantity(final int quantity) {
