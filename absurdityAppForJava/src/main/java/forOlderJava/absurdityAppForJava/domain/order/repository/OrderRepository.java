@@ -37,4 +37,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o where o.status = forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus.CHECK")
     Page<Order> findALlStatusInPayed(Pageable pageable);
+
+    long countByMember_Id(Long memberId);
+
+    @Query("""
+    SELECT COALESCE(
+        CAST(COUNT(CASE WHEN o.status = :completedStatus THEN 1 END) AS double) / 
+        CAST(COUNT(o) AS double),
+        0.0
+    )
+    FROM Order o
+    WHERE o.member.id = :memberId
+    """)
+    double findCompletionRateByMemberId(@Param("memberId") Long memberId, @Param("completedStatus") List<OrderStatus> completedStatus);
 }
