@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -74,18 +76,32 @@ public class ItemService {
 
     }
 
-//    @Transactional(readOnly = true)
-//    public FindNewItemsResponse findNewItemsWithRedis(ItemSortType sortType) {
-//        List<ItemRedisDto> itemRedisDtos = itemCacheService.getNewItems();
-//        List<FindNewItemResponse> items = itemRedisDtos.stream()
-//                .map(item -> FindNewItemResponse.of(
-//                        item.itemId(),
-//                        item.name(),
-//                        item.price(),
-//                        item.discount(),
-//                        redisCacheService.getTotalNumberOfOrdersByMemberId(item.itemId(), ORDER_COUNT_CACHE_KEY + item.itemId()),
-//                        redisCacheService.getAverageRatingByItemId(item.itemId(), AVERAGE_RATE_CACHE_KEY + item.itemId())
-//                ))
-//                .toList();
-//    }
+    @Transactional(readOnly = true)
+    public FindNewItemsResponse findNewItemsWithRedis(ItemSortType sortType) {
+        List<ItemRedisDto> itemRedisDtos = itemCacheService.getNewItems();
+        List<FindNewItemResponse> items = itemRedisDtos.stream()
+                .map(item -> FindNewItemResponse.of(
+                        item.itemId(),
+                        item.name(),
+                        item.price(),
+                        item.discount(),
+                        redisCacheService.getTotalNumberOfOrdersByMemberId(item.itemId(), ORDER_COUNT_CACHE_KEY + item.itemId()),
+                        redisCacheService.getAverageRatingByItemId(item.itemId(), AVERAGE_RATE_CACHE_KEY + item.itemId())
+                ))
+                .toList();
+
+        return FindNewItemsResponse.from(sortNewItems(items, sortType));
+    }
+
+    private List<FindNewItemResponse> sortNewItems(List<FindNewItemResponse> items, ItemSortType sortType) {
+        List<FindNewItemResponse> sortedItems = new ArrayList<>(items);
+        switch (sortType) {
+            case LOWEST_AMOUNT -> sortedItems.sort(Comparator.comparingInt(FindNewItemResponse::price));
+            case HIGHEST_AMOUNT -> sortedItems.sort(Comparator.comparingInt(FindNewItemResponse::price).reversed());
+            case NEW -> sortedItems.sort(Comparator.comparingLong(FindNewItemResponse::itemId).reversed());
+            case DISCOUNT -> sortedItems.sort(Comparator.comparingInt(FindNewItemResponse::discount).reversed());
+            default -> sortedItems.sort(Comparator.comparingLong(FindNewItemResponse::orderCount).reversed());
+        }
+        return sortedItems;
+    }
 }
