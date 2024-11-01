@@ -50,4 +50,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     WHERE o.member.id = :memberId
     """)
     double findCompletionRateByMemberId(@Param("memberId") Long memberId, @Param("completedStatus") List<OrderStatus> completedStatus);
+
+
+    @Query("""
+        SELECT COALESCE(AVG(oi.order.orderInfo.price), 0.0)
+        FROM OrderItem oi
+        WHERE oi.item.id = :itemId
+        AND oi.order.status != 'OLDER_CANCEL'
+        AND oi.order.status != 'YOUNGER_CANCEL'
+""")
+    Double findAverageRatingByItemId(@Param("itemId") Long itemId);
+
+    @Query("""
+        SELECT count(DISTINCT oi.order)
+        FROM OrderItem oi
+        WHERE oi.item.id = :itemId
+""")
+    Long countByItem_Id(Long itemId);
 }

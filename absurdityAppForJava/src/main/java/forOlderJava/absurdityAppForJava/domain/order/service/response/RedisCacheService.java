@@ -32,6 +32,21 @@ public class RedisCacheService {
         return dbCount;
     }
 
+    public double getAverageRatingByItemId(final Long itemId, final String cacheKey) {
+
+        String averageRating = listOperations.index(cacheKey, 0);
+
+        if (averageRating != null) return Double.parseDouble(averageRating);
+
+        Double dbAverageRating = orderRepository.findAverageRatingByItemId(itemId);
+        Long numberOfOrder = orderRepository.countByItem_Id(itemId);
+
+        listOperations.rightPushAll(cacheKey, String.valueOf(dbAverageRating), String.valueOf(numberOfOrder));
+
+        return dbAverageRating;
+
+    }
+
     public void increaseOrderCount(final Long memberId, final String cachedKey) {
         Long cachedCount = orderCountRedisTemplate.opsForValue().get(cachedKey);
 

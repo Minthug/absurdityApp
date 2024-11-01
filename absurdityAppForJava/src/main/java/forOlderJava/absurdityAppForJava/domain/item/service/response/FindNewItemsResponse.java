@@ -1,7 +1,5 @@
 package forOlderJava.absurdityAppForJava.domain.item.service.response;
 
-import forOlderJava.absurdityAppForJava.domain.item.Item;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

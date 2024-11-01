@@ -1,6 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.item.service;
 
 import forOlderJava.absurdityAppForJava.domain.item.Item;
+import forOlderJava.absurdityAppForJava.domain.item.ItemSortType;
 import forOlderJava.absurdityAppForJava.domain.item.exception.NotFoundItemException;
 import forOlderJava.absurdityAppForJava.domain.item.repository.ItemRepository;
 import forOlderJava.absurdityAppForJava.domain.item.service.request.FindItemDetailCommand;
@@ -9,11 +10,15 @@ import forOlderJava.absurdityAppForJava.domain.item.service.request.RegisterItem
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindItemDetailResponse;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindItemsResponse;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindNewItemsResponse;
+import forOlderJava.absurdityAppForJava.domain.item.service.response.FindNewItemsResponse.FindNewItemResponse;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.ItemRedisDto;
+import forOlderJava.absurdityAppForJava.domain.order.service.response.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -24,6 +29,7 @@ public class ItemService {
     private final ItemCacheService itemCacheService;
     private final RedisCacheService redisCacheService;
 
+    private static final String ORDER_COUNT_CACHE_KEY = "orderCount:Item";
     private static final String AVERAGE_RATE_CACHE_KEY = "averageRating::Item:";
 
     @Transactional
@@ -67,4 +73,19 @@ public class ItemService {
                         findNewItemsCommand.pageRequest()));
 
     }
+
+//    @Transactional(readOnly = true)
+//    public FindNewItemsResponse findNewItemsWithRedis(ItemSortType sortType) {
+//        List<ItemRedisDto> itemRedisDtos = itemCacheService.getNewItems();
+//        List<FindNewItemResponse> items = itemRedisDtos.stream()
+//                .map(item -> FindNewItemResponse.of(
+//                        item.itemId(),
+//                        item.name(),
+//                        item.price(),
+//                        item.discount(),
+//                        redisCacheService.getTotalNumberOfOrdersByMemberId(item.itemId(), ORDER_COUNT_CACHE_KEY + item.itemId()),
+//                        redisCacheService.getAverageRatingByItemId(item.itemId(), AVERAGE_RATE_CACHE_KEY + item.itemId())
+//                ))
+//                .toList();
+//    }
 }

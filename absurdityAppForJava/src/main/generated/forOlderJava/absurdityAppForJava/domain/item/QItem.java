@@ -33,6 +33,8 @@ public class QItem extends EntityPathBase<Item> {
 
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
+    public final NumberPath<Integer> maxBuyQuantity = createNumber("maxBuyQuantity", Integer.class);
+
     public final StringPath name = createString("name");
 
     public final ListPath<forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem, forOlderJava.absurdityAppForJava.domain.order.entity.QOrderItem> orderItems = this.<forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem, forOlderJava.absurdityAppForJava.domain.order.entity.QOrderItem>createList("orderItems", forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem.class, forOlderJava.absurdityAppForJava.domain.order.entity.QOrderItem.class, PathInits.DIRECT2);
