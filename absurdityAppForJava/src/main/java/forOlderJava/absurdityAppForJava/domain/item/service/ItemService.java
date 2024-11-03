@@ -4,9 +4,7 @@ import forOlderJava.absurdityAppForJava.domain.item.Item;
 import forOlderJava.absurdityAppForJava.domain.item.ItemSortType;
 import forOlderJava.absurdityAppForJava.domain.item.exception.NotFoundItemException;
 import forOlderJava.absurdityAppForJava.domain.item.repository.ItemRepository;
-import forOlderJava.absurdityAppForJava.domain.item.service.request.FindItemDetailCommand;
-import forOlderJava.absurdityAppForJava.domain.item.service.request.FindNewItemsCommand;
-import forOlderJava.absurdityAppForJava.domain.item.service.request.RegisterItemCommand;
+import forOlderJava.absurdityAppForJava.domain.item.service.request.*;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindItemDetailResponse;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindItemsResponse;
 import forOlderJava.absurdityAppForJava.domain.item.service.response.FindNewItemsResponse;
@@ -108,6 +106,27 @@ public class ItemService {
     @Transactional
     public void updateItem(UpdateItemCommand updateItemCommand) {
 
+        Long itemId = updateItemCommand.itemId();
 
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new NotFoundItemException("해당 Id의 아이템은 존재하지 않습니다"));
+        item.updateItem(updateItemCommand.name(), updateItemCommand.price(),
+                updateItemCommand.quantity(), updateItemCommand.description(),
+                updateItemCommand.discount());
+    }
+
+    @Transactional
+    public void deleteById(Long itemId) {
+        itemRepository.deleteById(itemId);
+    }
+
+    @Transactional(readOnly = true)
+    public FindItemsResponse findHotItems(FindHotItemsCommand findHotItemsCommand) {
+
+        List<Item> items = itemRepository.findHotItemsOrderBy(findHotItemsCommand.lastIdx(),
+                findHotItemsCommand.lastItemId(), findHotItemsCommand.itemSortType(),
+                findHotItemsCommand.pageRequest());
+
+        return FindItemsResponse.from(items);
     }
 }
