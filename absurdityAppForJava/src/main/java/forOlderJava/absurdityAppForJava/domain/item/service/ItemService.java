@@ -104,4 +104,10 @@ public class ItemService {
         }
         return sortedItems;
     }
+
+    @Transactional
+    public void updateItem(UpdateItemCommand updateItemCommand) {
+
+
+    }
 }
