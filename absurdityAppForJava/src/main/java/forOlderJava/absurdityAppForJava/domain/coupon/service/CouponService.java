@@ -84,7 +84,7 @@ public class CouponService {
 
     private Coupon findCouponByCouponId(Long couponId) {
         return couponRepository.findById(couponId)
-                .orElseThrow(() -> new NotFoundCouponException("존재 하지 않는 쿠폰 입니다."))
+                .orElseThrow(() -> new NotFoundCouponException("존재 하지 않는 쿠폰 입니다."));
     }
 
     private Member findMemberByMemberId(Long memberId) {
