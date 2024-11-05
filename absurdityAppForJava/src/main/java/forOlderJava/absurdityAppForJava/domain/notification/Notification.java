@@ -1,7 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.notification;
 
+import forOlderJava.absurdityAppForJava.domain.notification.exception.InvalidNotificationException;
 import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
-import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
