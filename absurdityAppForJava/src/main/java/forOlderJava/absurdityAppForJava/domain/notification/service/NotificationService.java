@@ -37,9 +37,11 @@ public class NotificationService {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterRepository.save(emitterId, emitter);
 
+        // 연결 종료/에러시 emitter 제거
         emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
         emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
         emitter.onError(e -> emitterRepository.deleteById(emitterId));
+
 
         send(emitter, emitterId, format("[connected] MemberId={0}", memberId));
 
@@ -77,6 +79,12 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundMemberException("존재하지 않은 유저 입니다"));
     }
 
+    /**
+     * 알림 객체 전송용
+     * @param emitter
+     * @param emitterId
+     * @param data
+     */
     private void send(SseEmitter emitter, String emitterId, NotificationResponse data) {
         try {
             emitter.send(SseEmitter.event()
@@ -88,6 +96,13 @@ public class NotificationService {
         }
     }
 
+    /**
+     *
+     * 일반 데이터 전송용
+     * @param emitter
+     * @param emitterId
+     * @param data
+     */
     private void send(SseEmitter emitter, String emitterId, Object data) {
         try {
             emitter.send(SseEmitter.event()

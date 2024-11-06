@@ -26,18 +26,18 @@ spring:
         registration:
           naver:
             client-name: naver
-            client-id: ${NAVER_CLIENT_ID}
-            client-secret: ${NAVER_CLIENT_SECRET}
+            client-id: JZyot9UmRasVMMTiGn1I
+            client-secret: YulxRS0e6F
             scope: nickname, email
-            redirect-uri: ${REDIRECT_URI}
+            redirect-uri: "{baseUrl}/login/oauth/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
           kakao:
             client-name: kakao
-            client-id: ${KAKAO_CLIENT_ID}
-            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-id: 3ad7f886a9bab530b840abf8ee5c8b58
+            client-secret: b3PqoMFX9UMDpNPjwWoWnCaw2MMv86DY
             scope: profile_nickname, account_email
-            redirect-uri: ${REDIRECT_URI}
+            redirect-uri: "{baseUrl}/login/oauth/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
           google:
@@ -63,56 +63,6 @@ spring:
             token-uri: https://www.googleapis.com/oauth2/v4/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
-
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            client-id: 170861640900-34omi25au55mb616tq60463mu1tobuq1.apps.googleusercontent.com
-#            client-secret: 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
-#            scope:
-#              - email
-#              - profile
-#            redirect-uri: "{baseUrl}/login/oauth/code/{registrationId}"
-#            client-name: Google
-#            authorization-grant-type: authorization_code
-#          naver:
-#            client-id: JZyot9UmRasVMMTiGn1I
-#            client-secret: YulxRS0e6F
-#            scope:
-#              - name
-#              - email
-#              - profile_image
-#            client-name: Naver
-#            authorization-grant-type: authorization_code
-#            redirect-uri: "{baseUrl}/login/oauth/code/{registrationId}"
-#          kakao:
-#            client-id: 3ad7f886a9bab530b840abf8ee5c8b58
-#            client-secret: b3PqoMFX9UMDpNPjwWoWnCaw2MMv86DY
-#            scope:
-#              - profile_nickname
-#              - account_email
-#              - profile_image
-#            client-name: Kakao
-#            authorization-grant-type: authorization_code
-#            redirect-uri: "{baseUrl}/login/oauth/code/{registrationId}"
-#            client-authentication-method: POST
-#        provider:
-#          google:
-#            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-#            token-uri: https://www.googleapis.com/oauth2/v4/token
-#            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-#            user-name-attribute: sub
-#          naver:
-#            authorization-uri: https://nid.naver.com/oauth2.0/authorize
-#            token-uri: https://nid.naver.com/oauth2.0/token
-#            user-info-uri: https://openapi.naver.com/v1/nid/me
-#            user-name-attribute: response
-#          kakao:
-#            authorization-uri: https://kauth.kakao.com/oauth/authorize
-#            token-uri: https://kauth.kakao.com/oauth/token
-#            user-info-uri: https://kapi.kakao.com/v2/user/me
-#            user-name-attribute: id
 
   data:
     redis:
