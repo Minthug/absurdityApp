@@ -1,15 +1,21 @@
 package forOlderJava.absurdityAppForJava.domain.notification.service;
 
+import forOlderJava.absurdityAppForJava.domain.member.exception.NotFoundMemberException;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
+import forOlderJava.absurdityAppForJava.domain.notification.Notification;
+import forOlderJava.absurdityAppForJava.domain.notification.NotificationType;
 import forOlderJava.absurdityAppForJava.domain.notification.repository.EmitterRepository;
 import forOlderJava.absurdityAppForJava.domain.notification.service.request.ConnectNotificationCommand;
+import forOlderJava.absurdityAppForJava.domain.notification.service.request.SendNotificationCommand;
 import forOlderJava.absurdityAppForJava.domain.notification.service.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.SortedSet;
 
 import static java.text.MessageFormat.format;
 
@@ -46,12 +52,51 @@ public class NotificationService {
         return emitter;
     }
 
-    private void send(SseEmitter emitter, String emitterId, NotificationResponse response) {
+    public void sendNotification(SendNotificationCommand sendNotificationCommand) {
+        Long memberId = sendNotificationCommand.memberId();
+        String title = sendNotificationCommand.title();
+        String content = sendNotificationCommand.content();
+        NotificationType notificationType = sendNotificationCommand.notificationType();
 
+        verifyExistsUser(memberId);
+        Notification notification = Notification.builder()
+                .title(title)
+                .content(content)
+                .memberId(memberId)
+                .notificationType(notificationType)
+                .build();
+
+        Map<String, SseEmitter> emitters = emitterRepository.findAllByIdStartWith(memberId);
+        emitters.forEach((key, emitter) -> {
+            send(emitter, key, NotificationResponse.from(notification));
+        });
+    }
+
+    private void verifyExistsUser(Long memberId) {
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException("존재하지 않은 유저 입니다"));
+    }
+
+    private void send(SseEmitter emitter, String emitterId, NotificationResponse data) {
+        try {
+            emitter.send(SseEmitter.event()
+                    .id(emitterId)
+                    .name(data.notificationType().getValue())
+                    .data(data));
+        } catch (IOException ex) {
+            emitterRepository.deleteById(emitterId);
+        }
     }
 
     private void send(SseEmitter emitter, String emitterId, Object data) {
-
+        try {
+            emitter.send(SseEmitter.event()
+                    .id(emitterId)
+                    .data(data));
+        } catch (IOException e) {
+            emitterRepository.deleteById(emitterId);
+            log.error("알림 전송에 실패했습니다", e);
+        }
     }
 }
 
