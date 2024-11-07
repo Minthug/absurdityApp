@@ -73,6 +73,10 @@ public class Member extends BaseTimeEntity {
         }
     }
 
+    public boolean isYounger(final Long memberId) {
+        return memberRole == MemberRole.ROLE_YOUNGER;
+    }
+
     public boolean isSameMemberId(Long id) {
         return this.id.equals(id);
     }
