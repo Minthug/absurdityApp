@@ -51,6 +51,12 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
 
+    @Column
+    private String youngerRequest;
+
+    @Column
+    private Integer tip;
+
     public UserCoupon getUserCoupon() {
         return orderInfo.getUserCoupon();
     }
@@ -116,6 +122,9 @@ public class Order extends BaseTimeEntity {
         this.status = orderStatus;
     }
 
+    public boolean isOwnByMember(final Member member) {
+        return this.member.equals(member);
+    }
 
     public boolean isMisMatchPrice(int amount) {
         return amount != this.orderInfo.getPrice();
