@@ -11,6 +11,7 @@ import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderExce
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.Errand;
 import forOlderJava.absurdityAppForJava.domain.younger.exception.AlreadyRegisteredErrandException;
+import forOlderJava.absurdityAppForJava.domain.younger.exception.NotFoundErrandException;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.ErrandRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.YoungerRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandByOrderCommand;
@@ -79,6 +80,21 @@ public class ErrandService {
 
     @Transactional
     public FindErrandByOrderResponse findErrandByOrder(FindErrandByOrderCommand findErrandByOrderCommand) {
+        Member member = findMemberByMemberId(findErrandByOrderCommand.memberId());
+        Errand errand = findErrandByOrderWithOrder(findErrandByOrderCommand.orderId());
+        checkAuthority(errand, member);
 
+        return FindErrandByOrderResponse.from(errand);
+    }
+
+    private Errand findErrandByOrderWithOrder(final Long orderId) {
+        return errandRepository.findByOrderIdWithOrder(orderId)
+                .orElseThrow(() -> new NotFoundErrandException("존재하지 않는 심부릅 입니다"));
+    }
+
+    private void checkAuthority(final Errand errand, final Member member) {
+        if (!errand.isOwnByMember(member)) {
+            throw new UnAuthenticationException("권한이 없습니다");
+        }
     }
 }
