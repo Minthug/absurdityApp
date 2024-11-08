@@ -13,7 +13,9 @@ import forOlderJava.absurdityAppForJava.domain.younger.Errand;
 import forOlderJava.absurdityAppForJava.domain.younger.exception.AlreadyRegisteredErrandException;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.ErrandRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.YoungerRepository;
+import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandByOrderCommand;
 import forOlderJava.absurdityAppForJava.domain.younger.service.request.RegisterErrandCommand;
+import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandByOrderResponse;
 import forOlderJava.absurdityAppForJava.global.auth.exception.UnAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -75,4 +77,8 @@ public class ErrandService {
     }
 
 
+    @Transactional
+    public FindErrandByOrderResponse findErrandByOrder(FindErrandByOrderCommand findErrandByOrderCommand) {
+
+    }
 }
