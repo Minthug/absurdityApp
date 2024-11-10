@@ -15,6 +15,7 @@ import forOlderJava.absurdityAppForJava.domain.younger.exception.NotFoundErrandE
 import forOlderJava.absurdityAppForJava.domain.younger.repository.ErrandRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.YoungerRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandByOrderCommand;
+import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandDetailCommand;
 import forOlderJava.absurdityAppForJava.domain.younger.service.request.RegisterErrandCommand;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandByOrderResponse;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandDetailResponse;
@@ -99,8 +100,14 @@ public class ErrandService {
         }
     }
 
-    @Transactional
-    public FindErrandDetailResponse findErrand() {
+    @Transactional(readOnly = true)
+    public FindErrandDetailResponse findErrand(FindErrandDetailCommand findErrandDetailCommand) {
+        Errand errand = findErrandByErrandIdWithOrderAndOrderItems(findErrandDetailCommand);
+        return FindErrandDetailResponse.from(errand);
+    }
 
+    private Errand findErrandByErrandIdWithOrderAndOrderItems(FindErrandDetailCommand findErrandDetailCommand) {
+        return errandRepository.findByIdWithOrderAndItems(findErrandDetailCommand.errandId())
+                .orElseThrow(() -> new NotFoundErrandException("존재하지 않는 심부름 입니다"));
     }
 }
