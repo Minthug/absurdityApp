@@ -1,14 +1,21 @@
 package forOlderJava.absurdityAppForJava.domain.younger.controller;
 
 import forOlderJava.absurdityAppForJava.domain.younger.exception.AlreadyAssignedErrandException;
+import forOlderJava.absurdityAppForJava.domain.younger.exception.ErrandException;
 import forOlderJava.absurdityAppForJava.domain.younger.service.ErrandService;
 import forOlderJava.absurdityAppForJava.domain.younger.service.request.*;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandByOrderResponse;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandDetailResponse;
+import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindWaitingErrandsResponse;
+import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindYoungerErrandsResponse;
 import forOlderJava.absurdityAppForJava.global.auth.LoginUser;
+import forOlderJava.absurdityAppForJava.global.util.ErrorTemplate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
@@ -80,5 +87,33 @@ public class ErrandController {
         CompleteErrandCommand completeErrandCommand = CompleteErrandCommand.of(errandId, youngerId);
         errandService.completeErrand(completeErrandCommand);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/waiting")
+    public ResponseEntity<FindWaitingErrandsResponse> findWaitingErrands(final Pageable pageable) {
+        FindWaitingErrandCommand findWaitingErrandCommand = FindWaitingErrandCommand.from(pageable);
+        FindWaitingErrandsResponse findWaitingErrandsResponse = errandService.findWaitingErrand(findWaitingErrandCommand);
+        return ResponseEntity.ok(findWaitingErrandsResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<FindYoungerErrandsResponse> findYoungerErrands(FindYoungerErrandRequest findYoungerErrandRequest,
+                                                                         final Pageable pageable,
+                                                                         @LoginUser final Long youngerId) {
+        FindYoungerErrandCommand findYoungerErrandCommand = FindYoungerErrandCommand.of(youngerId, findYoungerErrandRequest.errandStatuses(), pageable);
+        FindYoungerErrandsResponse findYoungerErrandsResponse = errandService.findYoungerErrands(findYoungerErrandCommand);
+        return ResponseEntity.ok(findYoungerErrandsResponse);
+    }
+
+    @ExceptionHandler(ErrandException.class)
+    public ResponseEntity<ErrorTemplate> errandExHandle(ErrandException ex) {
+        ErrorTemplate errorTemplate = ErrorTemplate.of(ex.getMessage());
+        return ResponseEntity.badRequest().body(errorTemplate);
+    }
+
+    @ExceptionHandler(AlreadyAssignedErrandException.class)
+    public ResponseEntity<ErrorTemplate> alreadyAssignedExHandle(AlreadyAssignedErrandException ex) {
+        ErrorTemplate errorTemplate = ErrorTemplate.of(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorTemplate);
     }
 }
