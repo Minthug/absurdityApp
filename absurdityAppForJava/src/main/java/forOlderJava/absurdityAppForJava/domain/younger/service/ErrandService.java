@@ -10,21 +10,24 @@ import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.Errand;
+import forOlderJava.absurdityAppForJava.domain.younger.Younger;
 import forOlderJava.absurdityAppForJava.domain.younger.exception.AlreadyRegisteredErrandException;
 import forOlderJava.absurdityAppForJava.domain.younger.exception.NotFoundErrandException;
+import forOlderJava.absurdityAppForJava.domain.younger.exception.NotFoundYoungerException;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.ErrandRepository;
 import forOlderJava.absurdityAppForJava.domain.younger.repository.YoungerRepository;
-import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandByOrderCommand;
-import forOlderJava.absurdityAppForJava.domain.younger.service.request.FindErrandDetailCommand;
-import forOlderJava.absurdityAppForJava.domain.younger.service.request.RegisterErrandCommand;
+import forOlderJava.absurdityAppForJava.domain.younger.service.request.*;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandByOrderResponse;
 import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindErrandDetailResponse;
+import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindWaitingErrandsResponse;
+import forOlderJava.absurdityAppForJava.domain.younger.service.response.FindYoungerErrandsResponse;
 import forOlderJava.absurdityAppForJava.global.auth.exception.UnAuthenticationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static forOlderJava.absurdityAppForJava.domain.notification.NotificationMessage.REGISTER_ERRAND;
+import static forOlderJava.absurdityAppForJava.domain.notification.NotificationMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -110,4 +113,77 @@ public class ErrandService {
         return errandRepository.findByIdWithOrderAndItems(findErrandDetailCommand.errandId())
                 .orElseThrow(() -> new NotFoundErrandException("존재하지 않는 심부름 입니다"));
     }
+
+    @Transactional
+    public void acceptErrand(AcceptErrandCommand acceptErrandCommand) {
+        Younger younger = findYoungerByYoungerId(acceptErrandCommand.youngerId());
+        Errand errand = findErrandByErrandIdOptimistic(acceptErrandCommand);
+        errand.assignYounger(younger);
+    }
+
+    private Errand findErrandByErrandIdOptimistic(AcceptErrandCommand acceptErrandCommand) {
+        return errandRepository.findByIdOptimistic(acceptErrandCommand.errandId())
+                .orElseThrow(() -> new NotFoundErrandException("존재하지 않는 심부름 입니다"));
+    }
+
+    private Younger findYoungerByYoungerId(final Long youngerId) {
+        return youngerRepository.findById(youngerId)
+                .orElseThrow(() -> new NotFoundYoungerException("존재하지 않는 동생입니다"));
+    }
+
+    @Transactional
+    public void startErrand(StartErrandCommand startErrandCommand) {
+        Younger younger = findYoungerByYoungerId(startErrandCommand.youngerId());
+        Errand errand = findErrandByErrandId(startErrandCommand.errandId());
+        errand.checkAuthority(younger);
+        errand.startErrand(startErrandCommand.errandEstimateMinutes());
+
+        sendStartErrandNotification(startErrandCommand, errand);
+    }
+
+    private Errand findErrandByErrandId(final Long errandId) {
+        return errandRepository.findById(errandId)
+                .orElseThrow(() -> new NotFoundErrandException("존재하지 않는 심부릅 입니다"));
+    }
+
+    @Transactional(readOnly = true)
+    public FindWaitingErrandsResponse findWaitingErrand(FindWaitingErrandCommand findWaitingErrandCommand) {
+        Page<Errand> errandPage = errandRepository.findWaitingErrands(findWaitingErrandCommand.pageable());
+        return FindWaitingErrandsResponse.from(errandPage);
+    }
+
+    @Transactional
+    public void completeErrand(CompleteErrandCommand completeErrandCommand) {
+        Younger younger = findYoungerByYoungerId(completeErrandCommand.youngerId());
+        Errand errand = findErrandByErrandId(completeErrandCommand.errandId());
+        errand.checkAuthority(younger);
+        errand.completeErrand();
+        sendCompleteErrandNotification(errand);
+    }
+
+    private void sendCompleteErrandNotification(Errand errand) {
+        SendNotificationCommand command = SendNotificationCommand.of(
+                errand.getMemberId(),
+                COMPLETE_ERRAND.getTitle(),
+                COMPLETE_ERRAND.getContentFromFormat(),
+                NotificationType.DELIVERY);
+
+        notificationService.sendNotification(command);
+    }
+
+    @Transactional
+    public FindYoungerErrandsResponse findYoungerErrands(FindYoungerErrandCommand findYoungerErrandCommand) {
+
+    }
+
+    private void sendStartErrandNotification(StartErrandCommand startErrandCommand, Errand errand) {
+        SendNotificationCommand sendNotificationCommand = SendNotificationCommand.of(
+                errand.getMemberId(),
+                START_ERRAND.getTitle(),
+                START_ERRAND.getContentFromFormat(startErrandCommand.errandEstimateMinutes()),
+                NotificationType.DELIVERY);
+
+        notificationService.sendNotification(sendNotificationCommand);
+    }
+
 }
