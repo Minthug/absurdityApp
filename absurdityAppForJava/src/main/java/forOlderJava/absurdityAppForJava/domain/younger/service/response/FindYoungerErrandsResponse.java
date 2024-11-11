@@ -10,7 +10,7 @@ public record FindYoungerErrandsResponse(List<FindYoungerErrandResponse> errands
 
     public static FindYoungerErrandsResponse of(final List<Errand> contents,
                                                 final int page,
-                                                final int totalElements) {
+                                                final long totalElements) {
         List<FindYoungerErrandResponse> errandResponses = contents.stream()
                 .map(FindYoungerErrandResponse::from)
                 .toList();

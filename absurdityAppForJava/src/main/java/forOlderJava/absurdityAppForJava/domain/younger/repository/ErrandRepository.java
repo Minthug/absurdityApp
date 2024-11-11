@@ -4,6 +4,7 @@ import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.younger.Errand;
 import forOlderJava.absurdityAppForJava.domain.younger.ErrandStatus;
+import forOlderJava.absurdityAppForJava.domain.younger.Younger;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +33,8 @@ public interface ErrandRepository extends JpaRepository<Errand, Long> {
 
     @Query(value = "select e from Errand e"
     + " where e.younger = :younger and e.errandStatus in :status")
-    Page<Errand> findYoungerErrand(@Param("errand") Errand errand,
-                                   @Param("status") ErrandStatus errandStatus,
+    Page<Errand> findYoungerErrands(@Param("younger") Younger younger,
+                                   @Param("status") List<ErrandStatus> errandStatus,
                                    Pageable pageable);
 
     @Lock(LockModeType.OPTIMISTIC)

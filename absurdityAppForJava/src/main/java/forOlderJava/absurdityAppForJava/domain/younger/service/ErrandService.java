@@ -173,7 +173,15 @@ public class ErrandService {
 
     @Transactional
     public FindYoungerErrandsResponse findYoungerErrands(FindYoungerErrandCommand findYoungerErrandCommand) {
-
+        Younger younger = findYoungerByYoungerId(findYoungerErrandCommand.youngerId());
+        Page<Errand> errandPage = errandRepository.findYoungerErrands(
+                younger,
+                findYoungerErrandCommand.errandStatuses(),
+                findYoungerErrandCommand.pageable());
+        return FindYoungerErrandsResponse.of(
+                errandPage.getContent(),
+                errandPage.getNumber(),
+                errandPage.getTotalElements());
     }
 
     private void sendStartErrandNotification(StartErrandCommand startErrandCommand, Errand errand) {
