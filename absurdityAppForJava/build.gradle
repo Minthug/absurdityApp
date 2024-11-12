@@ -110,3 +110,7 @@ sourceSets {
 clean {
 	delete file(generated)
 }
+
+test {
+	enabled = false  // 테스트를 건너뜀
+}

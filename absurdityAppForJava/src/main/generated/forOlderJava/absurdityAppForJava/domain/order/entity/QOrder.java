@@ -41,10 +41,14 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final EnumPath<OrderStatus> status = createEnum("status", OrderStatus.class);
 
+    public final NumberPath<Integer> tip = createNumber("tip", Integer.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public final StringPath uuid = createString("uuid");
+
+    public final StringPath youngerRequest = createString("youngerRequest");
 
     public QOrder(String variable) {
         this(Order.class, forVariable(variable), INITS);
