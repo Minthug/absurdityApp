@@ -44,6 +44,9 @@ dependencies {
 	implementation 'net.javacrumbs.shedlock:shedlock-spring:4.14.0'
 	implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.14.0'
 
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+
 	implementation 'org.postgresql:postgresql'
 	runtimeOnly 'org.postgresql:postgresql'
 

@@ -83,3 +83,12 @@ spring:
       fail-url: http://localhost:8080/v1/pays/toss/fail
       secret-key: test_sk_Ba5PzR0ArnyWngvd5wnkVvmYnNeD
       confirm-url: https://api.tosspayments.com/v1/payments/confirm
+
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+    consumer:
+      group-id: absurdity-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
