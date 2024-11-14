@@ -8,10 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -87,5 +86,29 @@ public class KafkaIntegrationTest {
         assertThrows(IllegalArgumentException.class, () -> {
             producer.sendErrandStatus(invalidMessage);
         });
+    }
+
+    @Test
+    @DisplayName("Consumer 메시지 처리 테스트")
+    void test_message_consumption() throws Exception {
+        //given
+        ErrandStatusMessage message = ErrandStatusMessage.of(1L, "STARTED", LocalDateTime.now());
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<ErrandStatusMessage> receivedMessage = new AtomicReference<>();
+
+        //when
+        consumer.consumerErrandStatus(message, "1");
+
+        //then
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertNotNull(receivedMessage);
+        assertEquals("STARTED", receivedMessage.get().status());
+    }
+
+    @AfterAll
+    void tearDown() {
+        if (testConsumer != null) {
+            testConsumer.close();
+        }
     }
 }
