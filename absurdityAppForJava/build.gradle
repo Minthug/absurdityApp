@@ -46,6 +46,7 @@ dependencies {
 
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testImplementation 'org.awaitility:awaitility:4.2.0'  // 비동기 테스트를 위한 라이브러리
 
 	implementation 'org.postgresql:postgresql'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -67,6 +68,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 	testImplementation 'org.mockito:mockito-junit-jupiter:4.5.1'
 	testImplementation 'org.assertj:assertj-core:3.22.0'
+
+
+	// Kafka 테스트 관련 의존성
+	testImplementation 'org.testcontainers:kafka'
+	testImplementation 'org.awaitility:awaitility'
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 

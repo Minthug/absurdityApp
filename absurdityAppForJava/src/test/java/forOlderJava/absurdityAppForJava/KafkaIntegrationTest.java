@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -24,10 +26,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 
 
 @SpringBootTest
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:29092" })
+@TestPropertySource(properties = {
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "spring.kafka.test.topic=test-topic"  // 테스트 토픽 설정
+})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class KafkaIntegrationTest {
 
@@ -60,25 +68,27 @@ public class KafkaIntegrationTest {
 
     @Test
     @DisplayName("메시지 전송 테스트")
-    void when_send_Message_thenMessageIsReceived() {
+    public void whenSendMessage_thenMessageIsReceived() {
         //given
         ErrandStatusMessage message = ErrandStatusMessage.of(1L, "COMPLETED", LocalDateTime.now());
         //when
         producer.sendErrandStatus(message);
 
         //then
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
         ConsumerRecords<String, String> records = testConsumer.poll(Duration.ofSeconds(10));
         assertFalse(records.isEmpty());
 
         ConsumerRecord<String, String> record = records.iterator().next();
         assertEquals("1", record.key());
         assertTrue(record.value().contains("COMPLETED"));
+        });
 
     }
 
     @Test
     @DisplayName("잘못된 메시지 전송 시 예외 발생 테스트")
-    void when_send_invalid_message_thenThrowException() {
+    public void whenSendInvalidMessage_thenThrowException() {
         //given
         ErrandStatusMessage invalidMessage = ErrandStatusMessage.of(-1L, "", LocalDateTime.now());
 
@@ -90,7 +100,7 @@ public class KafkaIntegrationTest {
 
     @Test
     @DisplayName("Consumer 메시지 처리 테스트")
-    void test_message_consumption() throws Exception {
+    public void testMessageConsumption() throws Exception {
         //given
         ErrandStatusMessage message = ErrandStatusMessage.of(1L, "STARTED", LocalDateTime.now());
         CountDownLatch latch = new CountDownLatch(1);
