@@ -15,6 +15,6 @@ RUN ./gradlew clean build
 # 실행 스테이지
 FROM amazoncorretto:17
 WORKDIR /app
-COPY --from=build /app/build/libs/setting-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/absurdityAppForJava-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
