@@ -85,12 +85,18 @@ spring:
       confirm-url: https://api.tosspayments.com/v1/payments/confirm
 
   kafka:
-    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+    bootstrap-servers: localhost:29092
     consumer:
       group-id: absurdity-group
       auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     test:
       topic: errand-status-topic
+    properties:
+      reconnect.backoff.ms: 1000
+      reconnect.backoff.max.ms: 5000
+      max.poll.interval.ms: 300000
