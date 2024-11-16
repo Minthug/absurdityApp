@@ -91,12 +91,19 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        reconnect.backoff.ms: 1000
+        reconnect.backoff.max.ms: 5000
+        max.poll.interval.ms: 300000
+        spring.json.trusted.packages: "*"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    test:
-      topic: errand-status-topic
+    admin:
+      properties:
+        retry.backoff.ms: 1000
+        request.timeout.ms: 5000
+        retries: 3
+        metadata.max.age.ms: 10000
     properties:
-      reconnect.backoff.ms: 1000
-      reconnect.backoff.max.ms: 5000
-      max.poll.interval.ms: 300000
+      auto.create.topics.enable: true
