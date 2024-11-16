@@ -42,7 +42,11 @@ public class KafkaConfig {
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        configs.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
+        configs.put(AdminClientConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
+        configs.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 5000);
+        configs.put(AdminClientConfig.RETRIES_CONFIG, 3);
+        configs.put(AdminClientConfig.METADATA_MAX_AGE_CONFIG, 10000);
+
         return new KafkaAdmin(configs);
     }
 
@@ -64,15 +68,16 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, ErrandStatusMessage> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "absurdity-group");
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");  // 처음부터 메시지 읽기
-        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);  // 수동 커밋 설정
-        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);  // 한 번에 가져올 최대 레코드 수
+        config.put(ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG, 1000);
+        config.put(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, 5000);
+        config.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
+
 
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(ErrandStatusMessage.class, objectMapper()));
     }
