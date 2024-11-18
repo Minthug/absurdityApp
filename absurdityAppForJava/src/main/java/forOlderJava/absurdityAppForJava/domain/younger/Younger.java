@@ -35,6 +35,12 @@ public class Younger extends BaseTimeEntity {
     @Column(nullable = false)
     private String location;
 
+    @Column(nullable = false)
+    private Double rating = 0.0;
+
+    @Column(nullable = false)
+    private Integer ratingCount = 0;
+
     @Builder
     public Younger(final String username, final String password, final String location) {
         validateUsername(username);
@@ -78,5 +84,10 @@ public class Younger extends BaseTimeEntity {
     @Override
     public int hashCode() {
         return Objects.hash(username);
+    }
+
+    public void updateRating(Double newRating) {
+        this.rating = ((this.rating * this.ratingCount) + newRating) / (this.ratingCount + 1);
+        this.ratingCount++;
     }
 }
