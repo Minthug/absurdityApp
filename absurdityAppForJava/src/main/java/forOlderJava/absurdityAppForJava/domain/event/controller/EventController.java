@@ -1,6 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.event.controller;
 
 import forOlderJava.absurdityAppForJava.domain.event.Event;
+import forOlderJava.absurdityAppForJava.domain.event.exception.NotFoundEventException;
 import forOlderJava.absurdityAppForJava.domain.event.repository.EventRepository;
 import forOlderJava.absurdityAppForJava.domain.event.service.EventCacheService;
 import forOlderJava.absurdityAppForJava.domain.event.service.EventItemService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static forOlderJava.absurdityAppForJava.domain.event.service.response.FindEventDetailResponse.*;
 
@@ -70,9 +72,50 @@ public class EventController {
                             eventRedisDto.description());
 
                     List<EventItemResponse> items = itemService.findItemsByIds(
+                                    eventCacheService.getEventItemIds(eventId)
+                            ).stream()
+                            .map(item -> new EventItemResponse(
+                                    item.getId(),
+                                    item.getName(),
+                                    item.getPrice(),
+                                    item.getDiscount(),
+                                    item.getRate()
+                            )).collect(Collectors.toList());
 
-                    )
-                }
+                    return ResponseEntity.ok(FindEventDetailResponse.of(eventDetail, items));
+                })
+                .orElseGet(() -> {
+                    // DB에서 이벤트 상세 조회 (fetch join 사용)
+                    Event event = eventRepository.findByIdWithEventItems(eventId)
+                            .orElseThrow(() -> new NotFoundEventException("Event not found"));
+
+                    // 응답 생성
+                    EventDetailResponse eventDetail = new EventDetailResponse(
+                            event.getId(),
+                            event.getTitle(),
+                            event.getDescription()
+                    );
+
+                    // 아이템 정보 변환
+                    List<EventItemResponse> items = event.getEventItems().stream()
+                            .map(eventItem -> new EventItemResponse(
+                                    eventItem.getId(),
+                                    eventItem.getItem().getName(),
+                                    eventItem.getItem().getPrice(),
+                                    eventItem.getItem().getDiscount(),
+                                    eventItem.getItem().getRate()
+                            )).collect(Collectors.toList());
+
+                    // 캐시 저장
+                    eventCacheService.cacheEventInfo(EventRedisDto.from(event));
+                    eventCacheService.cacheEventItems(eventId,
+                            items.stream()
+                                    .map(EventItemResponse::itemId)
+                                    .collect(Collectors.toList())
+                    );
+
+                    return ResponseEntity.ok(FindEventDetailResponse.of(eventDetail, items));
+                });
     }
 
     @PostMapping("/{eventId}")
