@@ -16,9 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -128,5 +127,50 @@ public class ItemService {
                 findHotItemsCommand.pageRequest());
 
         return FindItemsResponse.from(items);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Item> findItemsByIds(List<Long> itemIds) {
+        List<Item> cachedItems = itemIds.stream()
+                .map(itemCacheService::getItemInfo)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(this::convertToItem)
+                .collect(Collectors.toList());
+
+        if (cachedItems.size() == itemIds.size()) {
+            return cachedItems;
+        }
+
+        List<Long> uncachedItemIds = itemIds.stream()
+                .filter(id -> !cachedItems.stream()
+                        .map(Item::getId)
+                        .collect(Collectors.toList())
+                        .contains(id))
+                .collect(Collectors.toList());
+
+        List<Item> dbItems = itemRepository.findByItemIdIn(uncachedItemIds);
+
+        dbItems.forEach(item -> itemCacheService.saveNewItem(ItemRedisDto.from(item)));
+
+        List<Item> allItems = new ArrayList<>(cachedItems);
+        allItems.addAll(dbItems);
+
+        return itemIds.stream()
+                .map(id -> allItems.stream()
+                        .filter(item -> item.getId().equals(id))
+                        .findFirst()
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private Item convertToItem(ItemRedisDto itemRedisDto) {
+        return Item.builder()
+                .id(itemRedisDto.itemId())
+                .name(itemRedisDto.name())
+                .price(itemRedisDto.price())
+                .discount(itemRedisDto.discount())
+                .build();
     }
 }

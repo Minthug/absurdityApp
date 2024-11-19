@@ -57,7 +57,8 @@ public class Item extends BaseTimeEntity {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
-    public Item(String name, int price, String description, double rate, int quantity, int discount, int maxBuyQuantity) {
+    public Item(Long id, String name, int price, String description, double rate, int quantity, int discount, int maxBuyQuantity) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;

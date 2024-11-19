@@ -3,7 +3,6 @@ package forOlderJava.absurdityAppForJava.domain.event.service;
 import forOlderJava.absurdityAppForJava.domain.event.Event;
 import forOlderJava.absurdityAppForJava.domain.event.EventItem;
 import forOlderJava.absurdityAppForJava.domain.event.repository.EventRepository;
-import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,8 +80,6 @@ public class EventCacheService {
                     return eventRedisDto;
                 });
     }
-
-
     /**
      * 캐시 미스 전략 추가
      * @param limit
