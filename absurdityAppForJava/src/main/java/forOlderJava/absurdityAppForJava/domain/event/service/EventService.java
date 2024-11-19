@@ -11,6 +11,9 @@ import forOlderJava.absurdityAppForJava.domain.event.service.request.RegisterEve
 import forOlderJava.absurdityAppForJava.domain.event.service.response.FindEventDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +39,9 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public FindEventsResponse findEvents() {
-        List<Event> events = eventRepository.findAllByOrderByCreatedAtDesc();
+        Pageable pageable = PageRequest.of(0, 100, // 적절한 크기 지정
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Event> events = eventRepository.findAllByOrderByCreatedAtDesc(pageable);
         return FindEventsResponse.of(events.stream()
                 .map(event -> new FindEventResponse(
                         event.getId(),

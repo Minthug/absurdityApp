@@ -48,4 +48,6 @@ public class EventController {
         URI location = URI.create(BASE_URL + saved);
         return ResponseEntity.created(location).build();
     }
+
+    @GetMapping
 }
