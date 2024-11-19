@@ -74,14 +74,18 @@ public class EventCacheService {
 
     public List<Long> getEventItemIds(Long eventId) {
         String key = EVENT_ITEMS_PREFIX + eventId;
-        List<String> itemIds = redisTemplate.opsForList()
+        List<Object> itemIds = redisTemplate.opsForList()
                 .range(key, 0, -1);
 
-        return itemIds != null ?
-                itemIds.stream()
-                        .map(Long::parseLong)
-                        .collect(Collectors.toList()) : Collections.emptyList();
+        if (itemIds == null || itemIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return itemIds.stream()
+                .map(obj -> Long.parseLong(String.valueOf(obj)))
+                .collect(Collectors.toList());
     }
+
 
     public void deleteEventCache(Long eventId) {
         redisTemplate.delete(EVENT_INFO_PREFIX + eventId);
