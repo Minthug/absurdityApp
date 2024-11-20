@@ -1,8 +1,8 @@
 package forOlderJava.absurdityAppForJava.domain.coupon.service;
 
+import forOlderJava.absurdityAppForJava.domain.coupon.service.response.CouponRedisDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

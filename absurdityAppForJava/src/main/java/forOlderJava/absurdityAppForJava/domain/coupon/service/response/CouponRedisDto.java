@@ -1,4 +1,4 @@
-package forOlderJava.absurdityAppForJava.domain.coupon.service;
+package forOlderJava.absurdityAppForJava.domain.coupon.service.response;
 
 import forOlderJava.absurdityAppForJava.domain.coupon.Coupon;
 
