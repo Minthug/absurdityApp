@@ -30,6 +30,10 @@ public class QYounger extends EntityPathBase<Younger> {
 
     public final StringPath password = createString("password");
 
+    public final NumberPath<Double> rating = createNumber("rating", Double.class);
+
+    public final NumberPath<Integer> ratingCount = createNumber("ratingCount", Integer.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

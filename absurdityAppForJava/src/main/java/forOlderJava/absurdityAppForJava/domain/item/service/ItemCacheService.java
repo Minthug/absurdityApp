@@ -26,6 +26,11 @@ public class ItemCacheService {
     private final ItemRepository itemRepository;
 
 
+    public void deleteItemCache(Long itemId) {
+        String key = ITEM_INFO_PREFIX + itemId;
+        redisTemplate.delete(key);
+    }
+
     public void cacheItemInfo(ItemRedisDto itemRedisDto) {
         redisTemplate.opsForValue().set(
                 ITEM_INFO_PREFIX + itemRedisDto.itemId(),
