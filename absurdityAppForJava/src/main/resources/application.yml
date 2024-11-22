@@ -1,7 +1,7 @@
 spring:
   profiles:
     include:
-
+  server: 8081
 
   datasource:
     url: jdbc:postgresql://localhost:5432/brothers
@@ -107,3 +107,7 @@ spring:
         metadata.max.age.ms: 10000
     properties:
       auto.create.topics.enable: true
+  logging:
+    level:
+      org.apache.kafka: WARN
+      org.springframework.kafka: WARN
