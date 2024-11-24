@@ -1,6 +1,5 @@
 package forOlderJava.absurdityAppForJava.domain.order.service;
 
-import com.google.api.gax.rpc.UnauthenticatedException;
 import forOlderJava.absurdityAppForJava.domain.coupon.Coupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.UserCoupon;
 import forOlderJava.absurdityAppForJava.domain.coupon.exception.InvalidCouponException;
@@ -18,7 +17,6 @@ import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
-import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderItemException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.UnauthorizedOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
