@@ -3,6 +3,7 @@ package forOlderJava.absurdityAppForJava;
 import forOlderJava.absurdityAppForJava.domain.member.service.MemberService;
 import forOlderJava.absurdityAppForJava.domain.member.service.request.RegisterUserCommand;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.UnauthorizedOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.service.OrderService;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrderRequest;
@@ -97,5 +98,51 @@ public class OrderFlowIntegrationTest {
 
         assertThrows(UnauthorizedOrderException.class, () ->
                 orderService.findPayedOrders(invalidCommand));
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("3. 주문 조회 예외 발생 테스트")
+    void findOrderExceptionTest() {
+
+        // 1. 존재하지 않은 주문 조회
+        assertThrows(NotFoundOrderException.class, () ->
+                orderService.findOrderByIdAndMemberId(testMemberId, 999L));
+
+        // 2. 다른 회의 주문 조회 시도
+        Long otherMemberId = 999L;
+        assertThrows(UnauthorizedOrderException.class, () ->
+                orderService.findOrderByIdAndMemberId(otherMemberId, testOrderId));
+
+        // 3. 잘못된 페이지 번호로 조회
+        FindOrdersResponse emptyResponse = orderService.findOrders(testMemberId, 999);
+        assertThat(emptyResponse.orders()).isEmpty();
+
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("4. 페이징 처리 테스트")
+    void pagingTest() {
+        for (int i = 0; i < 15; i++) {
+            createTestOrder(testOrderId);
+        }
+
+        FindOrdersResponse firstPage = orderService.findOrders(testMemberId, 0);
+        assertThat(firstPage.orders()).hasSize(10);
+
+        FindOrdersResponse secondPage = orderService.findOrders(testMemberId, 1);
+        assertThat(secondPage.orders()).hasSize(6);
+    }
+
+    private void createTestOrder(Long testOrderId) {
+        List<CreateOrderItemRequest> items = List.of(
+                new CreateOrderItemRequest(1L, 1)
+        );
+
+        CreateOrderRequest request = CreateOrderRequest.builder()
+                .createOrderItemRequests(items)
+                .build();
+        orderService.createOrder(CreateOrdersCommand.of(testMemberId, request));
     }
 }
