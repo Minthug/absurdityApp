@@ -12,10 +12,7 @@ import forOlderJava.absurdityAppForJava.domain.item.repository.ItemRepository;
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.exception.NotFoundMemberException;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
-import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
-import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
-import forOlderJava.absurdityAppForJava.domain.order.entity.OrderItem;
-import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
+import forOlderJava.absurdityAppForJava.domain.order.entity.*;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.UnauthorizedOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
@@ -33,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrderRequest.CreateOrderItemRequest;
 
@@ -53,10 +51,28 @@ public class OrderService {
         Member findMember = findMemberByMemberId(createOrdersCommand.memberId());
         List<OrderItem> orderItem = createOrderItem(createOrdersCommand.createOrderRequest()
                 .createOrderItemRequests());
-        Order order = new Order(findMember, orderItem);
+
+        Order order = Order.builder()
+                .member(findMember)
+                .orderItems(orderItem)
+                .orderer(new Orderer(
+                        findMember.getNickname(),
+                        findMember.getId(),
+                        createOrdersCommand.createOrderRequest().phoneNumber(),
+                        createOrdersCommand.createOrderRequest().location()
+                ))
+                .status(OrderStatus.PENDING)
+                .uuid(UUID.randomUUID().toString())
+                .build();
         orderRepository.save(order).getId();
 
         return CreateOrderResponse.from(order);
+    }
+
+    private int calculateTotalPrice(List<OrderItem> orderItem) {
+        return orderItem.stream()
+                .mapToInt(item -> item.getItem().getPrice() * item.getQuantity())
+                .sum();
     }
 
     @Transactional

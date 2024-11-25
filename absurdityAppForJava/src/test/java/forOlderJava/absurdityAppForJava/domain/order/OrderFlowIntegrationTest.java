@@ -1,6 +1,7 @@
 package forOlderJava.absurdityAppForJava.domain.order;
 
 import forOlderJava.absurdityAppForJava.domain.item.service.ItemService;
+import forOlderJava.absurdityAppForJava.domain.item.service.request.RegisterItemCommand;
 import forOlderJava.absurdityAppForJava.domain.member.MemberGrade;
 import forOlderJava.absurdityAppForJava.domain.member.MemberRole;
 import forOlderJava.absurdityAppForJava.domain.member.service.MemberService;
@@ -8,6 +9,7 @@ import forOlderJava.absurdityAppForJava.domain.member.service.request.RegisterUs
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
 import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
 import forOlderJava.absurdityAppForJava.domain.order.exception.UnauthorizedOrderException;
+import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.OrderService;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrderRequest;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrderRequest.CreateOrderItemRequest;
@@ -44,7 +46,32 @@ public class OrderFlowIntegrationTest {
     private static Long testYoungerId;
     private static Long testItemId1;
     private static Long testItemId2;
+    @Autowired
+    private OrderRepository orderRepository;
 
+    @BeforeEach
+    void setUp() {
+        RegisterItemCommand itemCommand = RegisterItemCommand.builder()
+                .name("테스트 상품 1")
+                .price(10000)
+                .description("테스트 상품")
+                .quantity(100)
+                .discount(0)
+                .maxBuyQuantity(10)
+                .build();
+        testItemId1 = itemService.saveItem(itemCommand);
+
+        RegisterItemCommand itemCommand2 = RegisterItemCommand.builder()
+                .name("테스트 상품 2")
+                .price(11000)
+                .description("테스트 상품 2")
+                .quantity(100)
+                .discount(0)
+                .maxBuyQuantity(10)
+                .build();
+
+        testItemId2 = itemService.saveItem(itemCommand2);
+    }
 
     @Test
     @Order(1)
@@ -59,23 +86,31 @@ public class OrderFlowIntegrationTest {
                 .memberGrade(MemberGrade.NONE)
                 .memberRole(MemberRole.ROLE_OLDER)
                 .build();
+
         testMemberId = memberService.getOrRegisterMember(userCommand).memberId();
 
         List<CreateOrderItemRequest> orderItems = List.of(
-                new CreateOrderItemRequest(1L, 2),
-                new CreateOrderItemRequest(2L, 1)
+                new CreateOrderItemRequest(testItemId1, 2),
+                new CreateOrderItemRequest(testItemId2, 1)
         );
 
         CreateOrderRequest orderRequest = CreateOrderRequest.builder()
                 .createOrderItemRequests(orderItems)
+                .phoneNumber("01012341234")
+                .location("내 방")
                 .build();
 
-        CreateOrdersCommand ordersCommand = CreateOrdersCommand.of(
-                testMemberId,
-                orderRequest
-        );
+        CreateOrdersCommand ordersCommand = CreateOrdersCommand.builder()
+                .memberId(testMemberId)
+                .createOrderRequest(orderRequest)
+                .build();
 
         testOrderId = orderService.createOrder(ordersCommand).orderId();
+
+        forOlderJava.absurdityAppForJava.domain.order.entity.Order createOrder = orderRepository.findById(testOrderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        assertThat(createOrder.getOrderer().getPhoneNumber()).isEqualTo("010-1234-1234");
 
         FindOrderDetailResponse detailResponse = orderService.findOrderByIdAndMemberId(testMemberId, testOrderId);
         assertThat(detailResponse.orderItems()).hasSize(2);
@@ -152,6 +187,7 @@ public class OrderFlowIntegrationTest {
 
         CreateOrderRequest request = CreateOrderRequest.builder()
                 .createOrderItemRequests(items)
+                .phoneNumber("010-1234-1234")
                 .build();
         orderService.createOrder(CreateOrdersCommand.of(testMemberId, request));
     }

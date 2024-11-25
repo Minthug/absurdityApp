@@ -90,6 +90,10 @@ public class Order extends BaseTimeEntity {
         this.status = orderStatus;
     }
 
+    private void setMember(Member member) {
+        this.member = member;
+    }
+
     private void setOrderItems(List<OrderItem> orderItems){
         this.orderItems = orderItems;
         orderItems.forEach(item -> item.setOrder(this));
