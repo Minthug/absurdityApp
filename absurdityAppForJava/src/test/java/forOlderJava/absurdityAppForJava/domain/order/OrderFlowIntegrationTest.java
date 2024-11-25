@@ -1,5 +1,8 @@
-package forOlderJava.absurdityAppForJava;
+package forOlderJava.absurdityAppForJava.domain.order;
 
+import forOlderJava.absurdityAppForJava.domain.item.service.ItemService;
+import forOlderJava.absurdityAppForJava.domain.member.MemberGrade;
+import forOlderJava.absurdityAppForJava.domain.member.MemberRole;
 import forOlderJava.absurdityAppForJava.domain.member.service.MemberService;
 import forOlderJava.absurdityAppForJava.domain.member.service.request.RegisterUserCommand;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
@@ -10,12 +13,10 @@ import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrder
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrderRequest.CreateOrderItemRequest;
 import forOlderJava.absurdityAppForJava.domain.order.service.request.CreateOrdersCommand;
 import forOlderJava.absurdityAppForJava.domain.order.service.response.FindOrderDetailResponse;
-import forOlderJava.absurdityAppForJava.domain.order.service.response.FindOrderResponse;
 import forOlderJava.absurdityAppForJava.domain.order.service.response.FindOrdersResponse;
 import forOlderJava.absurdityAppForJava.domain.order.service.response.FindPayedOrdersResponse;
 import forOlderJava.absurdityAppForJava.domain.payment.service.request.FindPayedOrdersCommand;
 import forOlderJava.absurdityAppForJava.domain.younger.service.ErrandService;
-import forOlderJava.absurdityAppForJava.domain.younger.service.request.RegisterErrandCommand;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,10 +36,15 @@ public class OrderFlowIntegrationTest {
     private OrderService orderService;
     @Autowired
     private ErrandService errandService;
+    @Autowired
+    private ItemService itemService;
 
     private static Long testMemberId;
     private static Long testOrderId;
     private static Long testYoungerId;
+    private static Long testItemId1;
+    private static Long testItemId2;
+
 
     @Test
     @Order(1)
@@ -48,6 +54,10 @@ public class OrderFlowIntegrationTest {
         RegisterUserCommand userCommand = RegisterUserCommand.builder()
                 .email("test@email.com")
                 .nickname("tester")
+                .provider("local")
+                .providerId("testId")
+                .memberGrade(MemberGrade.NONE)
+                .memberRole(MemberRole.ROLE_OLDER)
                 .build();
         testMemberId = memberService.getOrRegisterMember(userCommand).memberId();
 
