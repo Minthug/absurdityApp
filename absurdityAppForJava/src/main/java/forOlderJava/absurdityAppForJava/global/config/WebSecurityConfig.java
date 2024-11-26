@@ -3,6 +3,7 @@ package forOlderJava.absurdityAppForJava.global.config;
 import forOlderJava.absurdityAppForJava.global.auth.jwt.JwtAuthenticationProvider;
 import forOlderJava.absurdityAppForJava.global.auth.jwt.filter.JwtAuthenticationFilter;
 import forOlderJava.absurdityAppForJava.global.auth.oauth.handler.OAuth2AuthenticationSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +57,11 @@ public class WebSecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                }))
                 .oauth2Login(auth -> auth
                         .successHandler(oAuth2AuthenticationSuccessHandler))
                 .addFilterAfter(new JwtAuthenticationFilter(jwtAuthenticationProvider), SecurityContextHolderFilter.class);
@@ -95,7 +101,7 @@ public class WebSecurityConfig {
                 antMatcher(GET,"/v1/notifications/**"),
                 antMatcher(POST,"/v1/oauth2/authorization/**"),
                 antMatcher(GET, "/v1/items/**"),
-                antMatcher(GET, "/v1/event/**"),
+                antMatcher(GET, "/v1/events/**"),
                 antMatcher(GET, "/docs/**"));
         return requestMatchers.toArray(RequestMatcher[]::new);
     }
