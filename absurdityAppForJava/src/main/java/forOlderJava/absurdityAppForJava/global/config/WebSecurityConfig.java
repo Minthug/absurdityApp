@@ -45,6 +45,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(requestPermitAll()).permitAll()
+                        .requestMatchers("/v1/pays/**").hasRole("OLDER")
                         .requestMatchers(requestHasRoleOlder()).hasRole("OLDER")
                         .requestMatchers(requestHasRoleYoung()).hasRole("YOUNG")
                         .requestMatchers(requestHasRoleAdmin()).hasRole("ADMIN")

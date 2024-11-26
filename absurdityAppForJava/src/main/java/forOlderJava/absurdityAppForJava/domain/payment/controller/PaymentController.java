@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestControllerAdvice
+//@RestControllerAdvice
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/pays")
 public class PaymentController {

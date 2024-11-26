@@ -27,4 +27,12 @@ public class SecurityConfigTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("2. ROLE_OLDER 권한이 필요한 API 테스트")
+    void permitOlderApisTest() throws Exception {
+        mockMvc.perform(get("/v1/members/me"))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
 }

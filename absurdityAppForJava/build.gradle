@@ -64,6 +64,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 	testImplementation 'org.junit.platform:junit-platform-commons:1.10.0'
@@ -72,6 +73,12 @@ dependencies {
 	testImplementation 'org.assertj:assertj-core:3.22.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'  // 이것만 사용하거나
 
+	// MockMvc 관련
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.mockito:mockito-junit-jupiter'
+
+	// JSONPath 관련
+	testImplementation 'com.jayway.jsonpath:json-path'
 
 	// Kafka 테스트 관련 의존성
 	testImplementation 'org.testcontainers:kafka'
