@@ -49,9 +49,10 @@ public class Member extends BaseTimeEntity {
     private MemberGrade memberGrade;
 
     @Builder
-    public Member(final String nickname, final String email, final String provider, final String providerId, final String location, final MemberRole memberRole, final MemberGrade memberGrade) {
+    public Member(final Long id, final String nickname, final String email, final String provider, final String providerId, final String location, final MemberRole memberRole, final MemberGrade memberGrade) {
         validateNickname(nickname);
         validateEmail(email);
+        this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.provider = provider;

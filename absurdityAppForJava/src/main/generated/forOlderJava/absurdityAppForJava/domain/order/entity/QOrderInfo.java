@@ -22,8 +22,6 @@ public class QOrderInfo extends BeanPath<OrderInfo> {
 
     public static final QOrderInfo orderInfo = new QOrderInfo("orderInfo");
 
-    public final NumberPath<Long> brotherId = createNumber("brotherId", Long.class);
-
     public final BooleanPath delStatus = createBoolean("delStatus");
 
     public final NumberPath<Integer> errandPrice = createNumber("errandPrice", Integer.class);
@@ -37,6 +35,8 @@ public class QOrderInfo extends BeanPath<OrderInfo> {
     public final NumberPath<Integer> totalPrice = createNumber("totalPrice", Integer.class);
 
     public final forOlderJava.absurdityAppForJava.domain.coupon.QUserCoupon userCoupon;
+
+    public final NumberPath<Long> youngerId = createNumber("youngerId", Long.class);
 
     public QOrderInfo(String variable) {
         this(OrderInfo.class, forVariable(variable), INITS);

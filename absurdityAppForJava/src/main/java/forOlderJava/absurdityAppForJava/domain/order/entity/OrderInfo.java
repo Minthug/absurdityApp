@@ -13,7 +13,7 @@ public class OrderInfo {
 
     @Column(name = "info_order_id")
     private Long orderId;
-    private Long brotherId;
+    private Long youngerId;
     private int price;
     private int errandPrice;
     private boolean delStatus;
@@ -26,10 +26,10 @@ public class OrderInfo {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    public static OrderInfo createInitialOrderInfo(Long orderId, Long brotherId, int price, int errandPrice) {
+    public static OrderInfo createInitialOrderInfo(Long orderId, Long youngerId, int price, int errandPrice) {
         return OrderInfo.builder()
                 .orderId(orderId)
-                .brotherId(brotherId)
+                .youngerId(youngerId)
                 .price(0)
                 .errandPrice(errandPrice)
                 .delStatus(false)
@@ -39,9 +39,9 @@ public class OrderInfo {
     }
 
     @Builder
-    public OrderInfo(Long orderId, Long brotherId, int price, int errandPrice, boolean delStatus, int totalPrice, UserCoupon userCoupon, OrderStatus orderStatus) {
+    public OrderInfo(Long orderId, Long youngerId, int price, int errandPrice, boolean delStatus, int totalPrice, UserCoupon userCoupon, OrderStatus orderStatus) {
         this.orderId = orderId;
-        this.brotherId = brotherId;
+        this.youngerId = youngerId;
         this.price = price;
         this.errandPrice = errandPrice;
         this.delStatus = delStatus;
