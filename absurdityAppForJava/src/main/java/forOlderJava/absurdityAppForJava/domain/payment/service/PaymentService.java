@@ -64,7 +64,7 @@ public class PaymentService {
                 .orElseThrow(() -> new NotFoundPaymentException(("결제 정보를 찾을수 없습니다.")));
     }
 
-    private void validatePaymentProcess(Payment payment, Order order, Integer amount) {
+    public void validatePaymentProcess(Payment payment, Order order, Integer amount) {
         validatePaymentNotProcessed(payment);
         validateOrderPaymentInProcess(order);
         validatePaymentAmount(payment, amount);

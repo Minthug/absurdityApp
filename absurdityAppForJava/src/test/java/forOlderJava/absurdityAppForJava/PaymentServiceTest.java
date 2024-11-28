@@ -4,10 +4,14 @@ import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.order.entity.Order;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderInfo;
 import forOlderJava.absurdityAppForJava.domain.order.entity.OrderStatus;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotFoundOrderException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.NotPayingOrderException;
+import forOlderJava.absurdityAppForJava.domain.order.exception.PaymentAmountMisMatchException;
 import forOlderJava.absurdityAppForJava.domain.order.repository.OrderRepository;
 import forOlderJava.absurdityAppForJava.domain.order.service.OrderService;
 import forOlderJava.absurdityAppForJava.domain.payment.Payment;
 import forOlderJava.absurdityAppForJava.domain.payment.PaymentStatus;
+import forOlderJava.absurdityAppForJava.domain.payment.exception.DuplicatePayException;
 import forOlderJava.absurdityAppForJava.domain.payment.repository.PaymentRepository;
 import forOlderJava.absurdityAppForJava.domain.payment.service.PaymentService;
 import forOlderJava.absurdityAppForJava.domain.payment.service.response.PaymentRequestResponse;
@@ -21,6 +25,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -60,7 +66,7 @@ public class PaymentServiceTest {
         verify(paymentRepository).save(any(Payment.class));
     }
 
-    private Order createTestOrder(Long orderId, Long memberId, OrderStatus status){
+    private Order createTestOrder(Long orderId, Long memberId, OrderStatus status) {
         OrderInfo orderInfo = OrderInfo.builder()
                 .orderId(orderId)
                 .price(10000)
@@ -110,5 +116,73 @@ public class PaymentServiceTest {
 
         assertThat(response.status()).isEqualTo(PaymentStatus.SUCCESS.name());
         verify(paymentRepository).findByOrder_UuidAndMember_Id(uuid, memberId);
+    }
+
+    @Test
+    @DisplayName("3. 결제 프로세스 검증")
+    void validatePaymentProcessTest() {
+        Long orderId = 1L;
+        Long memberId = 1L;
+
+        Order validOrder = createTestOrder(orderId, memberId, OrderStatus.PAYING);
+        Integer orderAmount = validOrder.getOrderInfo().getPrice();
+        Payment validPayment = Payment.builder()
+                .order(validOrder)
+                .member(validOrder.getMember())
+                .paymentStatus(PaymentStatus.PENDING)
+                .build();
+    }
+        @Test
+        @DisplayName("금액 불일치 시 PaymentAmountMisMatchException 발생")
+        void validatePaymentAmount() {
+            Long orderId = 1L;
+            Long memberId = 1L;
+            Order validOrder = createTestOrder(orderId, memberId, OrderStatus.CHECK);
+            Payment validPayment = createTestPayment(validOrder, PaymentStatus.PENDING);
+
+
+            assertThrows(PaymentAmountMisMatchException.class, () ->
+                    paymentService.validatePaymentProcess(validPayment, validOrder, 99999));
+        }
+
+        @Test
+        @DisplayName("주문 상태가 PAYING이 아닐 시 NotPayingOrderException 발생")
+        void validateOrderStatus() {
+            // given
+            Long orderId = 1L;
+            Long memberId = 1L;
+            Order invalidOrder = createTestOrder(orderId, memberId, OrderStatus.CHECK);
+            Payment validPayment = createTestPayment(invalidOrder, PaymentStatus.PENDING);
+
+            assertThrows(NotPayingOrderException.class, () ->
+                    paymentService.validatePaymentProcess(validPayment, invalidOrder, 1000));
+        }
+
+        @Test
+        @DisplayName("이미 처리된 결인 경우 DuplicatePayException 발생")
+        void validatePaymentStatus() {
+            // given
+            Long orderId = 1L;
+            Long memberId = 1L;
+            Order validOrder = createTestOrder(orderId, memberId, OrderStatus.PAYING);
+            Payment processedPayment = createTestPayment(validOrder, PaymentStatus.SUCCESS);
+
+
+            Payment processPayment = Payment.builder()
+                    .order(validOrder)
+                    .member(validOrder.getMember())
+                    .paymentStatus(PaymentStatus.SUCCESS)
+                    .build();
+
+            assertThrows(DuplicatePayException.class, () ->
+                    paymentService.validatePaymentProcess(processPayment, validOrder, 1000));
+        }
+
+    private Payment createTestPayment(Order order, PaymentStatus status) {
+        return Payment.builder()
+                .order(order)
+                .member(order.getMember())  // Order에서 Member 가져오기
+                .paymentStatus(status)
+                .build();
     }
 }
