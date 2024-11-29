@@ -38,7 +38,7 @@ public class CartService {
 
         Cart foundCart = cartRepository.findByMember(foundMember)
                 .orElseGet(() -> {
-                    Cart savedCart = cartRepository.save(new Cart(foundMember));
+                    Cart savedCart = cartRepository.save(Cart.builder().member(foundMember).build());
                     return savedCart;
                 });
 

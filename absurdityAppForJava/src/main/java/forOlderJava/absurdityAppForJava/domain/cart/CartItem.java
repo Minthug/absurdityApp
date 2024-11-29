@@ -38,7 +38,8 @@ public class CartItem extends BaseTimeEntity {
     private boolean isChecked;
 
     @Builder
-    public CartItem(final Cart cart, final Item item, final int quantity) {
+    public CartItem(final Long id, final Cart cart, final Item item, final int quantity) {
+        this.id = id;
         this.cart = cart;
         this.item = item;
         this.quantity = quantity;

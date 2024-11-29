@@ -4,6 +4,7 @@ import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.exception.NotFoundMemberException;
 import forOlderJava.absurdityAppForJava.global.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,10 +25,13 @@ public class Cart extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Cart(final Member member) {
+    @Builder
+    public Cart(final Member member, final Long id) {
         validateMember(member);
         this.member = member;
+        this.id = id;
     }
+
 
     private void validateMember(final Member member) {
         if (isNull(member)) {
