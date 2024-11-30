@@ -6,17 +6,18 @@ import forOlderJava.absurdityAppForJava.domain.cart.repository.CartItemRepositor
 import forOlderJava.absurdityAppForJava.domain.cart.repository.CartRepository;
 import forOlderJava.absurdityAppForJava.domain.cart.service.CartService;
 import forOlderJava.absurdityAppForJava.domain.cart.service.request.RegisterCartItemCommand;
+import forOlderJava.absurdityAppForJava.domain.cart.service.response.FindCartItemsResponse;
 import forOlderJava.absurdityAppForJava.domain.item.Item;
 import forOlderJava.absurdityAppForJava.domain.item.repository.ItemRepository;
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +70,29 @@ public class CartServiceTest {
 
         assertThat(savedCartItemId).isEqualTo(cartItem.getId());
         verify(cartItemRepository).save(any(CartItem.class));
+    }
+
+    @Test
+    @DisplayName("장바구니 아이템 조회 테스트")
+    void findCartItemServiceTest() {
+        Long memberId = 1L;
+        Member member = createTestMember(memberId);
+        Cart cart = createTestCart(member);
+        List<CartItem> cartItems = List.of(
+                createTestCartItem(cart, createTestItem(1L), 2),
+                createTestCartItem(cart, createTestItem(2L), 1)
+        );
+
+        given(memberRepository.findById(memberId))
+                .willReturn(Optional.of(member));
+        given(cartRepository.findByMember(member))
+                .willReturn(Optional.of(cart));
+        given(cartItemRepository.findAllByCartOrderByCreatedAt(cart))
+                .willReturn(cartItems);
+
+        FindCartItemsResponse response = cartService.findCartItemsByMemberId(memberId);
+
+        assertThat(response.cartItems()).hasSize(2);
     }
 
     private Member createTestMember(Long memberId) {
