@@ -1,7 +1,9 @@
 package forOlderJava.absurdityAppForJava.domain.notification.service.request;
 
 import forOlderJava.absurdityAppForJava.domain.notification.NotificationType;
+import lombok.Builder;
 
+@Builder
 public record SendNotificationCommand(Long memberId, String title, String content, NotificationType notificationType) {
 
     public static SendNotificationCommand of(final Long memberId, final String title, final String content,
