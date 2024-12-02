@@ -2,11 +2,13 @@ package forOlderJava.absurdityAppForJava;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
+import forOlderJava.absurdityAppForJava.domain.notification.Notification;
 import forOlderJava.absurdityAppForJava.domain.notification.NotificationType;
 import forOlderJava.absurdityAppForJava.domain.notification.repository.EmitterRepository;
 import forOlderJava.absurdityAppForJava.domain.notification.service.NotificationService;
 import forOlderJava.absurdityAppForJava.domain.notification.service.request.ConnectNotificationCommand;
 import forOlderJava.absurdityAppForJava.domain.notification.service.request.SendNotificationCommand;
+import forOlderJava.absurdityAppForJava.domain.notification.service.response.NotificationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,16 +20,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
@@ -67,9 +71,9 @@ public class NotificationServiceTest {
         String connect = "테스트 내용";
         NotificationType notificationType = NotificationType.CONNECT;
 
-
         Map<String, SseEmitter> emitters = new HashMap<>();
         emitters.put("test_1", new SseEmitter());
+
 
         SendNotificationCommand command = SendNotificationCommand.builder()
                     .memberId(memberId)
@@ -98,7 +102,38 @@ public class NotificationServiceTest {
                 .build();
     }
 
-    void sendAndReceiveNotificationTest() {
+    @Test
+    @DisplayName("알림 전송 후 수신 테스트")
+    void sendAndReceiveNotificationTest() throws IOException {
+        Long memberId = 1L;
+        String title = "테스트 알림";
+        String content = "테스트 내용";
+        NotificationType notificationType = NotificationType.CONNECT;
+        LocalDateTime now = LocalDateTime.now();
+
+        SseEmitter emitter = mock(SseEmitter.class);
+        Map<String, SseEmitter> emitters = new HashMap<>();
+        emitters.put("test_1", emitter);
+
+        Member member = createTestMember(memberId);
+        when(memberRepository.findById(memberId))
+                .thenReturn(Optional.of(member));
+
+        when(emitterRepository.findAllByIdStartWith(memberId))
+                .thenReturn(emitters);
+
+        SendNotificationCommand command = SendNotificationCommand.builder()
+                        .memberId(memberId)
+                        .title(title)
+                        .content(content)
+                        .notificationType(notificationType)
+                        .build();
+
+        notificationService.sendNotification(command);
+
+        verify(memberRepository).findById(memberId);
+        verify(emitterRepository).findAllByIdStartWith(memberId);
+        verify(emitter).send(any(SseEmitter.SseEventBuilder.class));
 
     }
 }
