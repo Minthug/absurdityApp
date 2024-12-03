@@ -2,32 +2,26 @@ package forOlderJava.absurdityAppForJava;
 
 import forOlderJava.absurdityAppForJava.domain.member.Member;
 import forOlderJava.absurdityAppForJava.domain.member.repository.MemberRepository;
-import forOlderJava.absurdityAppForJava.domain.notification.Notification;
 import forOlderJava.absurdityAppForJava.domain.notification.NotificationType;
 import forOlderJava.absurdityAppForJava.domain.notification.repository.EmitterRepository;
 import forOlderJava.absurdityAppForJava.domain.notification.service.NotificationService;
 import forOlderJava.absurdityAppForJava.domain.notification.service.request.ConnectNotificationCommand;
 import forOlderJava.absurdityAppForJava.domain.notification.service.request.SendNotificationCommand;
-import forOlderJava.absurdityAppForJava.domain.notification.service.response.NotificationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -134,6 +128,22 @@ public class NotificationServiceTest {
         verify(memberRepository).findById(memberId);
         verify(emitterRepository).findAllByIdStartWith(memberId);
         verify(emitter).send(any(SseEmitter.SseEventBuilder.class));
+
+    }
+
+    @Test
+    @DisplayName("알림 연결 후 실시간 수신 테스트")
+    void realTimeNotiTest() throws IOException {
+        Long memberId = 1L;
+        String lastEventId = "";
+
+        SseEmitter emitter = mock(SseEmitter.class);
+        when(emitterRepository.save(anyString(), any(SseEmitter.class)))
+                .thenReturn(emitter);
+
+        ConnectNotificationCommand connectCommand = new ConnectNotificationCommand(memberId, lastEventId);
+        SseEmitter connectEmitter = notificationService.connectNotification(connectCommand);
+
 
     }
 }
