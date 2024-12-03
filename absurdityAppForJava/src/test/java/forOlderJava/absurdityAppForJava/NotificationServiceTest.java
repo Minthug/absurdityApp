@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -137,13 +138,28 @@ public class NotificationServiceTest {
         Long memberId = 1L;
         String lastEventId = "";
 
-        SseEmitter emitter = mock(SseEmitter.class);
-        when(emitterRepository.save(anyString(), any(SseEmitter.class)))
-                .thenReturn(emitter);
+        doNothing().when(emitterRepository).save(anyString(), any(SseEmitter.class));
+        Map<String, SseEmitter> emitters = new HashMap<>();
 
-        ConnectNotificationCommand connectCommand = new ConnectNotificationCommand(memberId, lastEventId);
-        SseEmitter connectEmitter = notificationService.connectNotification(connectCommand);
+        when(memberRepository.findById(memberId))
+                .thenReturn(Optional.of(createTestMember(memberId)));
+        when(emitterRepository.findAllByIdStartWith(memberId))
+                .thenReturn(emitters);
 
+        ConnectNotificationCommand command = new ConnectNotificationCommand(memberId, lastEventId);
+        SseEmitter result = notificationService.connectNotification(command);
 
+        verify(emitterRepository).save(anyString(), any(SseEmitter.class));
+
+        SendNotificationCommand sendCommand = SendNotificationCommand.builder()
+                .memberId(memberId)
+                .title("실시간 테스트")
+                .content("실시간 테스트 내용")
+                .notificationType(NotificationType.DELIVERY)
+                .build();
+
+        notificationService.sendNotification(sendCommand);
+
+        verify(emitterRepository).findAllByIdStartWith(memberId);
     }
 }
